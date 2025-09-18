@@ -23,6 +23,10 @@ public class CuidadorService {
         return cuidadorRepository.findAll();
     }
 
+    public Cuidador findById(Long id) {
+        return cuidadorRepository.findById(id).orElseThrow(()-> new RuntimeException("Não encontrado"));
+    }
+
     public List<Cuidador> findByEspecialidade(String especialidade) {
         return cuidadorRepository.findByEspecialidade(especialidade);
     }
@@ -32,7 +36,7 @@ public class CuidadorService {
     }
 
     public Cuidador update(Long id,  Cuidador cuidadorAtualizado) {
-        Cuidador cuidador = cuidadorRepository.findById(id).orElseThrow(()-> new RuntimeException("Não encontrado"));
+        Cuidador cuidador = findById(id);
         cuidador.setNome(cuidadorAtualizado.getNome());
         cuidador.setTurno(cuidadorAtualizado.getTurno());
         cuidador.setEspecialidade(cuidadorAtualizado.getEspecialidade());

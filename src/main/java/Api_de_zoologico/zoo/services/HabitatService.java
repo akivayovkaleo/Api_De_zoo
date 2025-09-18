@@ -28,15 +28,16 @@ public class HabitatService {
     }
 
     public Habitat findById(Long id) {
-        return habitRepo.findById(id).get();
+        return habitRepo.findById(id).orElseThrow(()-> new RuntimeException("Não encontrado"));
     }
 
     public Habitat set(Long id, HabitatDto habitDto) {
-        Habitat habit = findById(id);
+        Habitat habitat = findById(id);
+        habitat.setNome(habitDto.nome());
+        habitat.setTipo(habitDto.tipo());
+        habitat.setCapacidadeAnimal(habitDto.capacidadeAnimal());
 
-        return habitRepo.save(new Habitat(habit.getId(), habitDto.nome(),
-                habitDto.tipo(), habitDto.capacidadeAnimal(),
-                habit.getAnimais()));
+        return habitRepo.save(habitat);
     }
 
     public void delete(Long id) {

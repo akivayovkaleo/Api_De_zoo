@@ -4,6 +4,7 @@ import Api_de_zoologico.zoo.dtos.HabitatDto;
 import Api_de_zoologico.zoo.models.Habitat;
 import Api_de_zoologico.zoo.services.HabitatService;
 import Api_de_zoologico.zoo.utils.RespostaUtil;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

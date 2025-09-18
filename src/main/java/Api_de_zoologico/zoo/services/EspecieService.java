@@ -58,9 +58,7 @@ public class EspecieService {
         return especieRepository.findByNomeContainingIgnoreCase(familia);
     }
 
-    }
     public List<Especie> buscarPorClasse(String classe) {
         return especieRepository.findByClasse(classe);
     }
-
-}
+    }

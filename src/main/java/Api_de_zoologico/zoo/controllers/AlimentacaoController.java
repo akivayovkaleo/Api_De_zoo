@@ -23,6 +23,17 @@ public class AlimentacaoController {
         return ResponseEntity.ok(alimentServ.create(alimentacao));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(alimentServ.findById(id));
+        } catch (RuntimeException e) {
+            return RespostaUtil.
+                    buildErrorResponse("Alimento não encontrado",
+                            e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping
     public ResponseEntity<?> listar() {
         try {
@@ -34,12 +45,23 @@ public class AlimentacaoController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Alimentacao alimentacao) {
+        try {
+            return ResponseEntity.ok(alimentServ.update(id, alimentacao));
+        } catch (RuntimeException e) {
+            return RespostaUtil.
+                    buildErrorResponse("Falha ao encontrar alimento",
+                            e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         alimentServ.deletar(id);
     }
 
-    @GetMapping("?={tipoComida}")
+    @GetMapping("?tipoComida={tipoComida}")
     public ResponseEntity<?> listarPorComida(@PathVariable String tipoComida) {
         try {
             return ResponseEntity.ok(alimentServ.buscarPorTipoComida(tipoComida));
@@ -50,6 +72,12 @@ public class AlimentacaoController {
         }
     }
 
-    @GetMapping("?={anima}")
-    public ResponseEntity<?> listarPorAnima(@PathVariable String anima) {}
+    @GetMapping("?animalId={animal_id}")
+    public ResponseEntity<?> listarPorAnimalId(@PathVariable Long animal_id) {
+        try {
+            return ResponseEntity.ok(alimentServ.buscarPorAnimalId(animal_id));
+        } catch (RuntimeException e) {
+            return RespostaUtil.buildErrorResponse("Animal não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
 }
