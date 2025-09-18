@@ -45,8 +45,14 @@ public class CuidadorController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(Long id) {
-        cuidadorService.delete(id);
+    public ResponseEntity<?> delete(Long id) {
+        try {
+            cuidadorService.delete(id);
+            return ResponseEntity.ok("Cuidador removido");
+        }catch (RuntimeException e) {
+            return buildErrorResponse("Cuidador não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+
     }
 
     private ResponseEntity<Map<String, Object>> buildErrorResponse(String error, String message, HttpStatus status) {

@@ -7,5 +7,6 @@ public record AnimalDto(
                         int idade,
         @NotBlank(message = "O habitat é obrigatório") Long habitat_id,
         @NotBlank(message = "A espécie é obrigatória") Long especie_id,
-        @NotBlank(message = "O cuidador é obrigatório") Long cuidador_id) {
+        @NotBlank(message = "O cuidador é obrigatório") Long cuidador_id,
+        @NotBlank(message = "A alimentação é obrigatória") Long alimentacao_id) {
 }

@@ -1,5 +1,6 @@
 package Api_de_zoologico.zoo.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,10 +24,6 @@ public class Animal {
     private int idade;
 
     @ManyToOne
-    @JoinColumn(name = "especie_id")
-    private Especie especie;
-
-    @ManyToOne
     @JoinColumn(name = "habitat_id")
     private Habitat habitat;
 
@@ -34,6 +31,11 @@ public class Animal {
     @JoinColumn(name = "cuidador_id")
     private Cuidador cuidador;
 
-    @OneToOne(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Alimentacao> alimentacoes;
+
+    @ManyToOne
+    @JoinColumn(name = "especie_id")
+    private Especie especie;
 }

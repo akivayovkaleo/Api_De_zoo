@@ -1,5 +1,6 @@
 package Api_de_zoologico.zoo.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,8 +33,9 @@ public class Especie {
 
     private String classe;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "especie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Animal> animais;
 
-//http://localhost:8080/swagger-ui.html
+    //http://localhost:8080/swagger-ui.html
 }

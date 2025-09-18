@@ -77,7 +77,7 @@ public class EspecieController {
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             especieService.deletar(id);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok("Espécie Removida");
         } catch (RuntimeException e) {
             return buildErrorResponse("Erro ao deletar", e.getMessage(), HttpStatus.NOT_FOUND);
         }
