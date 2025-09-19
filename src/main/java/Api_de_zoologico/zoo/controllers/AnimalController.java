@@ -43,19 +43,59 @@ public class AnimalController {
         }
 
     }
+
     @GetMapping("/idade")
-    public ResponseEntity<List<Animal>>findByIdade(@RequestParam int idadeMin, @RequestParam int idadeMax) {
-        return ResponseEntity.ok(animalService.findByIdade(idadeMin,idadeMax));
+    @Operation(summary = "Filtra animais por faixa etária")
+    @ApiResponse(responseCode = "200", description = "Lista de animais retornada com sucesso")
+    public ResponseEntity<?> findByIdade(
+            @RequestParam int idadeMin,
+            @RequestParam int idadeMax
+    ) {
+        try {
+            return ResponseEntity.ok(animalService.findByIdade(idadeMin, idadeMax));
+        } catch (RuntimeException e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Falha ao encontrar animais na faixa etária de " + idadeMin + " a " + idadeMax,
+                    e.getMessage(),
+                    HttpStatus.NOT_FOUND
+            );
+        }
     }
+
 
     @GetMapping("/nome")
-    public ResponseEntity<List<Animal>> findByNome(@RequestParam String nome) {
-        return ResponseEntity.ok(animalService.findByNome(nome));
+    @Operation(summary = "Filtra animais por nome")
+    @ApiResponse(responseCode = "200", description = "Lista de animais retornada com sucesso")
+    public ResponseEntity<?> findBynName(
+            @RequestParam String nome
+    ) {
+        try {
+            return ResponseEntity.ok(animalService.findByNome(nome));
+        } catch (RuntimeException e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Falha ao encontrar animais com nome "+ nome,
+                    e.getMessage(),
+                    HttpStatus.NOT_FOUND
+            );
+        }
     }
 
+
     @GetMapping("/especie")
-    public ResponseEntity<List<Animal>> findByEspecie(@RequestParam String nome) {
-        return ResponseEntity.ok(animalService.findByEspecie(nome));
+    @Operation(summary = "Filtra animais por especie")
+    @ApiResponse(responseCode = "200", description = "Lista de animais retornada com sucesso")
+    public ResponseEntity<?> findByEsepecie(
+            @RequestParam String especie
+    ) {
+        try {
+            return ResponseEntity.ok(animalService.findByEspecie(especie));
+        } catch (RuntimeException e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Falha ao encontrar animais da especie "+ especie,
+                    e.getMessage(),
+                    HttpStatus.NOT_FOUND
+            );
+        }
     }
 
     @PostMapping
