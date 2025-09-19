@@ -19,7 +19,10 @@ public class AlimentacaoController {
     }
 
     @PostMapping
-    public ResponseEntity<Alimentacao> create(@RequestBody Alimentacao alimentacao){
+    public ResponseEntity<?> create(@RequestBody Alimentacao alimentacao){
+        if (!(alimentacao.getUnidadeMedida().equals("Kg") || alimentacao.getUnidadeMedida().equals("G"))) {
+            return RespostaUtil.buildErrorResponse("Unidade de medida inválida", "Unidade deve ser KG ou G", HttpStatus.NOT_ACCEPTABLE);
+        }
         return ResponseEntity.ok(alimentServ.create(alimentacao));
     }
 
@@ -61,7 +64,7 @@ public class AlimentacaoController {
         alimentServ.deletar(id);
     }
 
-    @GetMapping("?tipoComida={tipoComida}")
+    @GetMapping("={tipoComida}")
     public ResponseEntity<?> listarPorComida(@PathVariable String tipoComida) {
         try {
             return ResponseEntity.ok(alimentServ.buscarPorTipoComida(tipoComida));
