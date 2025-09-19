@@ -2,6 +2,7 @@ package Api_de_zoologico.zoo.controllers;
 
 import Api_de_zoologico.zoo.models.Cuidador;
 import Api_de_zoologico.zoo.services.CuidadorService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static Api_de_zoologico.zoo.utils.RespostaUtil.buildErrorResponse;
 
 @RestController
 @RequestMapping("/cuidadores")
@@ -25,15 +28,39 @@ public class CuidadorController {
         return ResponseEntity.ok(cuidadorService.create(cuidador));
     }
 
-    @GetMapping
-    public ResponseEntity<List<Cuidador>> listar(
-            @RequestParam(required = false) String especialidade,
-            @RequestParam(required = false) String turno
-    ) {
-        if (especialidade != null) return ResponseEntity.ok(cuidadorService.findByEspecialidade(especialidade));
-        if (turno != null) return ResponseEntity.ok(cuidadorService.findByTurno(turno));
+    @GetMapping()
+    public ResponseEntity<?> getAll(){
         return ResponseEntity.ok(cuidadorService.getAll());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable Long id){
+            try {
+                return ResponseEntity.ok(cuidadorService.findById(id));
+            }catch (RuntimeException e) {
+                return buildErrorResponse("Cuidador não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
+            }
+
+        }
+
+    @GetMapping("/especialidade")
+    public ResponseEntity<?> getByEspecialidade(@RequestParam String especialidade){
+        try {
+            return ResponseEntity.ok(cuidadorService.findByEspecialidade(especialidade));
+        }catch (RuntimeException e) {
+            return buildErrorResponse("Cuidador não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/turno")
+    public ResponseEntity<?> getByTurno(@RequestParam String turno){
+        try {
+            return ResponseEntity.ok(cuidadorService.findByTurno(turno));
+        }catch (RuntimeException e) {
+            return buildErrorResponse("Cuidador não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Cuidador cuidador) {
@@ -45,11 +72,16 @@ public class CuidadorController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             cuidadorService.delete(id);
             return ResponseEntity.ok("Cuidador removido");
-        }catch (RuntimeException e) {
+        }catch (DataIntegrityViolationException e) {
+            return buildErrorResponse("Erro de integridade referencial",
+                    "Não é possível deletar o cuidador porque existem animais vinculados a ele.",
+                    HttpStatus.CONFLICT);}
+
+        catch (RuntimeException e) {
             return buildErrorResponse("Cuidador não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
         }
 

@@ -1,5 +1,6 @@
 package Api_de_zoologico.zoo.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class Alimentacao {
     private String tipoComida;
     private Double quantidadeDiaria;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "animal_id")
     private Animal animal;
