@@ -1,90 +1,104 @@
-1. Criar uma Espécie
-POST /especies
-
-Cria um novo registro de espécie.
-
-Corpo da Requisição:
-
-JSON
+| Método   | Endpoint                                                | Descrição                             |
+| -------- | ------------------------------------------------------- | ------------------------------------- |
+| `GET`    | `/animais`                                              | Lista todos os animais                |
+| `GET`    | `/animais/{id}`                                         | Busca animal por ID                   |
+| `GET`    | `/animais/idade?idadeMin=2&idadeMax=5`                  | Filtra animais por faixa etária       |
+| `GET`    | `/animais/nome?nome=Leao`                               | Busca animais por nome                |
+| `GET`    | `/animais/especie?especie=Felidae`                      | Filtra animais por espécie            |
+| `POST`   | `/animais`                                              | Cria novo animal                      |
+| `PUT`    | `/animais/{id}`                                         | Atualiza animal existente             |
+| `DELETE` | `/animais/{id}`                                         | Deleta animal                         |
 
 {
-  "nome": "Leão-africano",
-  "descricao": "Grandes felinos predadores",
+  "nome": "Girafa",
+  "idade": 7,
+  "habitat_id": 1,
+  "especie_id": 1,
+  "cuidador_id": 1,
+  "alimentacao_id": 1
+}
+
+| Método   | Endpoint                                                | Descrição                             |
+| -------- | ------------------------------------------------------- | ------------------------------------- |
+| `GET`    | `/especies`                                             | Lista todas espécies              |
+| `GET`    | `/especies/{id}`                                        | Busca veterinário por ID              |
+| `GET`    | `/especies/nome?nome=Leao`                              | Filtra espécie por nome               |
+| `GET`    | `/especies/familia?familia=Familiareis`                 | Filtra espécie por familia |
+| `GET`    | `/especies/classe?classe=Mammalia`                      | Filtra espécie por classe             |
+| `POST`   | `/especies`                                             | Cria novo espécie                 |
+| `PUT`    | `/especies/{id}`                                        | Atualiza espécie existente        |
+| `DELETE` | `/especies/{id}`                                        | Remove espécie                    |
+
+{
+  "nome": "Panthera leo",
+  "descricao": "Espécie de leão africano",
   "nomeCientifico": "Panthera leo",
   "familia": "Felidae",
   "ordem": "Carnivora",
   "classe": "Mammalia"
 }
-2. Criar um Habitat
-POST /habitats
 
-Cria um novo registro de habitat.
 
-Corpo da Requisição:
 
-JSON
+| Método   | Endpoint                                                | Descrição                             |
+| -------- | ------------------------------------------------------- | ------------------------------------- |
+| `GET`    | `/habitats`                                             | Lista todos habitats              |
+| `GET`    | `/habitats/{id}`                                        | Busca habitats por ID              |
+| `GET`    | `/habitats/tipo?tipo=Terrestre`                              | Filtra habitats por tipo               |     |
+| `POST`   | `/habitats`                                             | Cria novo habitat                |
+| `PUT`    | `/habitats/{id}`                                        | Atualiza habitat existente        |
+| `DELETE` | `/habitats/{id}`                                        | Remove habitat                    |
 
 {
   "nome": "Floresta Tropical",
-  "tipo": "Terrestre",
+  "tipo": "Floresta",
   "capacidadeAnimal": 50
 }
-3. Criar um Cuidador
-POST /cuidadores
 
-Cria um novo cuidador para os animais.
 
-Corpo da Requisição:
-
-JSON
+| Método   | Endpoint                                                | Descrição                             |
+| -------- | ------------------------------------------------------- | ------------------------------------- |
+| `GET`    | `/cuidadores`                                             | Lista todos cuidadores              |
+| `GET`    | `/cuidadores/{id}`                                        | Busca cuidadores por ID              |
+| `GET`    | `/cuidadores/especialidade?especialidade=Felinos`                              | Filtra cuidadores por especialidade               |     |
+| `GET`    | `/cuidadores/turno?turno=Manhã`                              | Filtra cuidadores por turno               |     |
+| `POST`   | `/cuidadores`                                             | Cria novo cuidador                |
+| `PUT`    | `/cuidadores/{id}`                                        | Atualiza cuidador existente        |
+| `DELETE` | `/cuidadores/{id}`                                        | Remove cuidador                    |
 
 {
-  "nome": "João",
-  "especialidade": "Felinos",
+  "nome": "Ana Souza",
+  "especialidade": "Mamíferos",
   "turno": "Manhã"
 }
-4. Criar uma Alimentação
-POST /alimentacoes
 
-Cria um novo plano de alimentação.
 
-Corpo da Requisição:
-
-JSON
+| Método   | Endpoint                                                | Descrição                             |
+| -------- | ------------------------------------------------------- | ------------------------------------- |
+| `GET`    | `/alimentacoes`                                             | Lista todos alimentações              |
+| `GET`    | `/alimentacoes/{id}`                                        | Busca alimentação por ID              |
+| `POST`   | `/alimentacoes`                                             | Cria novo cuidador                |
+| `PUT`    | `/alimentacoes/{id}`                                        | Atualiza alimentação existente        |
+| `DELETE` | `/alimentacoes/{id}`                                        | Remove alimentação                    |
 
 {
-  "tipoComida": "Frutas e vegetais",
-  "frequencia": "Diariamente",
-  "quantidade": "1 kg"
+  "tipoComida": "Frutas",
+  "quantidadeDiaria": 2.5,
+  "animalId": 1
 }
-5. Criar um Veterinário
-POST /veterinarios
 
-Cria um novo registro para um veterinário.
 
-Corpo da Requisição:
-
-JSON
-
-{
-  "nome": "Dr. Carlos Santos",
-  "especialidade": "Animais Exóticos",
-  "crmv": "123456"
-}
-6. Criar um Animal
-POST /animais
-
-Cria um novo animal, vinculando-o a outros registros existentes.
-
-Corpo da Requisição:
-
-JSON
+| Método   | Endpoint                                                | Descrição                             |
+| -------- | ------------------------------------------------------- | ------------------------------------- |
+| `GET`    | `/veterinarios`                                         | Lista todos veterinários              |
+| `GET`    | `/veterinarios/{id}`                                    | Busca veterinário por ID              |
+| `GET`    | `/veterinarios/especialidade?especialidade=Cardiologia` | Filtra veterinários por especialidade |
+| `POST`   | `/veterinarios`                                         | Cria novo veterinário                 |
+| `PUT`    | `/veterinarios/{id}`                                    | Atualiza veterinário existente        |
+| `DELETE` | `/veterinarios/{id}`                                    | Remove veterinário                    |
 
 {
-    "nome": "Leão",
-    "idade": 5,
-    "habitat_id": 2,
-    "especie_id": 2,
-    "cuidador_id": 2,
-    "alimentacao_id": 53
+  "nome": "Dr. João Silva",
+  "crmv": "SC-12345",
+  "especialidade": "Cirurgia"
 }

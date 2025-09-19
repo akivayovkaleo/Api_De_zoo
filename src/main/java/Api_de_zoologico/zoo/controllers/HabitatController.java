@@ -43,7 +43,9 @@ public class HabitatController {
     }
 
     @GetMapping("/tipo")
-    public ResponseEntity<?> findHabitatByTipo(@RequestParam String tipo) {
+    public ResponseEntity<?> findHabitatByTipo(
+            @RequestParam String tipo
+    ) {
         try {
             return ResponseEntity.ok(habitServ.findByTipo(tipo));
         } catch (RuntimeException e) {

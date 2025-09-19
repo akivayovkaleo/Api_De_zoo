@@ -27,11 +27,15 @@ public class AnimalController {
         this.animalService = animalService;
     }
 
+    @Operation(summary = "Lista todos os animais")
+    @ApiResponse(responseCode = "200", description = "Animal encontrado com sucesso")
     @GetMapping
     public ResponseEntity<List<Animal>> findAll() {
         return ResponseEntity.ok(animalService.findAll());
     }
 
+    @Operation(summary = "Busca um animal pelo Id")
+    @ApiResponse(responseCode = "200", description = "Animal encontrado com sucesso")
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
@@ -39,9 +43,8 @@ public class AnimalController {
         } catch (RuntimeException e) {
             return RespostaUtil.
                     buildErrorResponse("Animal não encontrado",
-                            e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
+                            e.getMessage(), HttpStatus.NOT_FOUND);
         }
-
     }
 
     @GetMapping("/idade")
@@ -98,11 +101,15 @@ public class AnimalController {
         }
     }
 
+    @Operation(summary = "Cria um novo animal")
+    @ApiResponse(responseCode = "200", description = "Animal criado com sucesso")
     @PostMapping
     public ResponseEntity<?> add(@Valid @RequestBody AnimalDto animal) {
         return ResponseEntity.ok(animalService.create(animal));
     }
 
+    @Operation(summary = "Atualiza um animal pelo Id")
+    @ApiResponse(responseCode = "200", description = "Animal atualizado com sucesso")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody AnimalDto animal) {
         try{
@@ -112,6 +119,8 @@ public class AnimalController {
         }
     }
 
+    @Operation(summary = "Deleta um animal pelo Id")
+    @ApiResponse(responseCode = "200", description = "Animal deletado com sucesso")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try{
