@@ -31,7 +31,7 @@ public class Animal {
     @JoinColumn(name = "cuidador_id")
     private Cuidador cuidador;
 
-    @JsonIgnore
+
     @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Alimentacao> alimentacoes;
 

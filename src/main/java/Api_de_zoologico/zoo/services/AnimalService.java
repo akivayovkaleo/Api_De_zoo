@@ -79,7 +79,8 @@ public class AnimalService {
         Especie especie = especieRepository.findById(animalDto.especie_id()).orElseThrow(() -> new RuntimeException("Espécie não encontrada"));
 
         Alimentacao alimentacao = alimentacaoRepository.findById(animalDto.alimentacao_id()).orElseThrow(() -> new RuntimeException("Alimentação não encontrada"));
-        ArrayList<Alimentacao> alimentacoes = new ArrayList<>();
+
+        List<Alimentacao> alimentacoes = animal.getAlimentacoes();
         alimentacoes.add(alimentacao);
 
         int quantidadeAtual = habitat.getAnimais().size();

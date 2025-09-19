@@ -35,7 +35,7 @@ public class VeterinarioController {
     }
 
     @GetMapping("/especialidade")
-    public ResponseEntity<?> getByEspecialidade(@RequestAttribute String especialidade) {
+    public ResponseEntity<?> getByEspecialidade(@RequestParam  String especialidade) {
         try{
             return ResponseEntity.ok(veterinarioService.findByEspecialidade(especialidade));
         }catch (RuntimeException e){

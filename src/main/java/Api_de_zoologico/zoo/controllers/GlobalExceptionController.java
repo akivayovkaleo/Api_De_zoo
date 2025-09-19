@@ -36,7 +36,7 @@ public class GlobalExceptionController {
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.NOT_FOUND.value());
         body.put("error", "Erro de Runtime");
-        body.put("messages", "Não encontrado");
+        body.put("messages", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }

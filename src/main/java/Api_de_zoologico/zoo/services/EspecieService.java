@@ -36,7 +36,7 @@ public class EspecieService {
     }
 
     public Especie atualizar(Long id, EspecieDto dto) {
-        Especie especie = new Especie();
+        Especie especie = BuscarPorId(id);
         especie.setNome(dto.nome());
         especie.setDescricao(dto.descricao());
         especie.setNomeCientifico(dto.nomeCientifico());

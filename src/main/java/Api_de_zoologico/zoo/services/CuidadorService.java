@@ -44,7 +44,8 @@ public class CuidadorService {
     }
 
     public void delete(Long id) {
-        cuidadorRepository.deleteById(id);
+        Cuidador cuidador = findById(id);
+        cuidadorRepository.delete(cuidador);
     }
 
 }

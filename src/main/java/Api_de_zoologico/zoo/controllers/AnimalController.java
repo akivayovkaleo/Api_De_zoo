@@ -2,9 +2,12 @@ package Api_de_zoologico.zoo.controllers;
 
 import Api_de_zoologico.zoo.dtos.AnimalDto;
 import Api_de_zoologico.zoo.models.Animal;
+import Api_de_zoologico.zoo.models.Especie;
 import Api_de_zoologico.zoo.models.Veterinario;
 import Api_de_zoologico.zoo.services.AnimalService;
 import Api_de_zoologico.zoo.utils.RespostaUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +33,16 @@ public class AnimalController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Animal> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(animalService.findById(id));
-    }
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(animalService.findById(id));
+        } catch (RuntimeException e) {
+            return RespostaUtil.
+                    buildErrorResponse("Animal não encontrado",
+                            e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
+        }
 
+    }
     @GetMapping("/idade")
     public ResponseEntity<List<Animal>>findByIdade(@RequestParam int idadeMin, @RequestParam int idadeMax) {
         return ResponseEntity.ok(animalService.findByIdade(idadeMin,idadeMax));
