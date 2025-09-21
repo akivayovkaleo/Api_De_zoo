@@ -15,13 +15,15 @@ public class AnimalService {
     private HabitatRepository habitatRepository;
     private AlimentacaoRepository alimentacaoRepository;
     private EspecieRepository especieRepository;
+    private EmailService emailService;
 
-    public AnimalService(EspecieRepository especieRepository, AnimalRepository animalRepository, AlimentacaoRepository alimentacaoRepository, CuidadorRepository cuidadorRepository, HabitatRepository habitatRepository){
+    public AnimalService(EmailService emailService, EspecieRepository especieRepository, AnimalRepository animalRepository, AlimentacaoRepository alimentacaoRepository, CuidadorRepository cuidadorRepository, HabitatRepository habitatRepository){
         this.animalRepository = animalRepository;
         this.habitatRepository = habitatRepository;
         this.cuidadorRepository = cuidadorRepository;
         this.alimentacaoRepository = alimentacaoRepository;
         this.especieRepository = especieRepository;
+        this.emailService = emailService;
     }
 
     public List<Animal> findAll() {
@@ -68,6 +70,7 @@ public class AnimalService {
         animal.setEspecie(especie);
         animal.setAlimentacoes(alimentacoes);
 
+
         return animalRepository.save(animal);
     }
 
@@ -94,6 +97,8 @@ public class AnimalService {
         animal.setHabitat(habitat);
         animal.setEspecie(especie);
         animal.setAlimentacoes(alimentacoes);
+
+        emailService.sendEmail(animal.getCuidador().getEmail(), "Animal atualizado", "O animal " + animal.getNome() + " foi atualizado.");
 
         return animalRepository.save(animal);
     }

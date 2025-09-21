@@ -40,6 +40,7 @@ public class CuidadorService {
         cuidador.setNome(cuidadorAtualizado.getNome());
         cuidador.setTurno(cuidadorAtualizado.getTurno());
         cuidador.setEspecialidade(cuidadorAtualizado.getEspecialidade());
+        cuidador.setEmail(cuidadorAtualizado.getEmail());
         return cuidadorRepository.save(cuidador);
     }
 

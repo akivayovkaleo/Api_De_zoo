@@ -22,4 +22,5 @@ public class Cuidador {
     private String nome;
     private String especialidade;
     private String turno;
+    private String email;
 }
