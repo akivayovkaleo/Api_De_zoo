@@ -1,83 +1,141 @@
 package Api_de_zoologico.zoo.controllers;
 
+import Api_de_zoologico.zoo.dtos.AlimentacaoDto;
 import Api_de_zoologico.zoo.models.Alimentacao;
 import Api_de_zoologico.zoo.services.AlimentacaoService;
 import Api_de_zoologico.zoo.utils.RespostaUtil;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
-
 @RestController
 @RequestMapping("/alimentacoes")
+@CrossOrigin(origins = "*")
 public class AlimentacaoController {
-    private AlimentacaoService alimentServ;
+    private final AlimentacaoService alimentacaoService;
 
-    public AlimentacaoController(AlimentacaoService alimentServ) {
-        this.alimentServ = alimentServ;
-    }
-
-    @PostMapping
-    public ResponseEntity<Alimentacao> create(@RequestBody Alimentacao alimentacao){
-        return ResponseEntity.ok(alimentServ.create(alimentacao));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(alimentServ.findById(id));
-        } catch (RuntimeException e) {
-            return RespostaUtil.
-                    buildErrorResponse("Alimento não encontrado",
-                            e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public AlimentacaoController(AlimentacaoService alimentacaoService) {
+        this.alimentacaoService = alimentacaoService;
     }
 
     @GetMapping
-    public ResponseEntity<?> listar() {
+    public ResponseEntity<?> findAll(
+            @RequestParam(required = false) String tipoComida,
+            @RequestParam(required = false) Long animalId) {
         try {
-            return ResponseEntity.ok(alimentServ.getAll());
+            if (tipoComida != null && !tipoComida.trim().isEmpty()) {
+                return ResponseEntity.ok(alimentacaoService.findByTipoComida(tipoComida));
+            }
+            if (animalId != null) {
+                return ResponseEntity.ok(alimentacaoService.findByAnimalId(animalId));
+            }
+            return ResponseEntity.ok(alimentacaoService.findAll());
         } catch (RuntimeException e) {
-            return RespostaUtil.
-                    buildErrorResponse("Falha ao listar alimentos",
-                            e.getMessage(), HttpStatus.BAD_REQUEST);
+            return RespostaUtil.buildErrorResponse(
+                    "Erro ao filtrar alimentações",
+                    e.getMessage(),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (Exception e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro ao buscar alimentações",
+                    "Ocorreu um erro inesperado ao buscar alimentações: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        try {
+            Alimentacao alimentacao = alimentacaoService.findById(id);
+            return ResponseEntity.ok(alimentacao);
+        } catch (RuntimeException e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Alimentação não encontrada",
+                    "Não foi possível encontrar a alimentação com ID: " + id + ". " + e.getMessage(),
+                    HttpStatus.NOT_FOUND
+            );
+        } catch (Exception e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro ao buscar alimentação",
+                    "Ocorreu um erro inesperado ao buscar a alimentação: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<?> create(@Valid @RequestBody AlimentacaoDto alimentacaoDto) {
+        try {
+            Alimentacao alimentacaoCriada = alimentacaoService.create(alimentacaoDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(alimentacaoCriada);
+        } catch (RuntimeException e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro ao criar alimentação",
+                    "Não foi possível criar a alimentação. " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (Exception e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro interno do servidor",
+                    "Ocorreu um erro inesperado ao criar a alimentação: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Alimentacao alimentacao) {
+    public ResponseEntity<?> update(@PathVariable Long id,
+                                    @Valid @RequestBody AlimentacaoDto alimentacaoDto) {
         try {
-            return ResponseEntity.ok(alimentServ.update(id, alimentacao));
+            Alimentacao alimentacaoAtualizada = alimentacaoService.update(id, alimentacaoDto);
+            return ResponseEntity.ok(alimentacaoAtualizada);
         } catch (RuntimeException e) {
-            return RespostaUtil.
-                    buildErrorResponse("Falha ao encontrar alimento",
-                            e.getMessage(), HttpStatus.NOT_FOUND);
+            return RespostaUtil.buildErrorResponse(
+                    "Erro ao atualizar alimentação",
+                    "Não foi possível atualizar a alimentação com ID: " + id + ". " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (Exception e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro interno do servidor",
+                    "Ocorreu um erro inesperado ao atualizar a alimentação: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        alimentServ.deletar(id);
-    }
-
-    @GetMapping("?tipoComida={tipoComida}")
-    public ResponseEntity<?> listarPorComida(@PathVariable String tipoComida) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(alimentServ.buscarPorTipoComida(tipoComida));
+            alimentacaoService.delete(id);
+            return ResponseEntity.ok().body(new MensagemResponse("Alimentação removida com sucesso"));
         } catch (RuntimeException e) {
-            return RespostaUtil.
-                    buildErrorResponse("Falha ao encontrar comida",
-                            e.getMessage(), HttpStatus.NOT_FOUND);
+            return RespostaUtil.buildErrorResponse(
+                    "Erro ao remover alimentação",
+                    "Não foi possível remover a alimentação com ID: " + id + ". " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (Exception e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro interno do servidor",
+                    "Ocorreu um erro inesperado ao remover a alimentação: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
-    @GetMapping("?animalId={animal_id}")
-    public ResponseEntity<?> listarPorAnimalId(@PathVariable Long animal_id) {
-        try {
-            return ResponseEntity.ok(alimentServ.buscarPorAnimalId(animal_id));
-        } catch (RuntimeException e) {
-            return RespostaUtil.buildErrorResponse("Animal não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
+    public static class MensagemResponse {
+        private String mensagem;
+
+        public MensagemResponse(String mensagem) {
+            this.mensagem = mensagem;
+        }
+
+        public String getMensagem() {
+            return mensagem;
         }
     }
 }

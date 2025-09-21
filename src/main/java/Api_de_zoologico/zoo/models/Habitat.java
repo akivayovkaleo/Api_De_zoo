@@ -24,6 +24,7 @@ public class Habitat {
     @Column(length = 45, nullable = false)
     private String tipo;
 
+    @Column(name = "capacidade_animal")
     private int capacidadeAnimal;
 
     @JsonIgnore

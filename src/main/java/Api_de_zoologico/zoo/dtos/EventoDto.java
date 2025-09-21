@@ -1,20 +1,27 @@
 package Api_de_zoologico.zoo.dtos;
 
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import jakarta.validation.constraints.Positive;
+
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Data
-public class EventoDto {
-    @NotBlank(message = "Nome do evento é obrigatório")
-    private String nomeDoEvento;
+public record EventoDto(
+        @NotBlank(message = "O nome do evento é obrigatório")
+        String nome,
 
-    private String descricao;
+        String descricao,
 
-    @NotNull(message = "Data e hora do evento são obrigatórias")
-    private LocalDateTime dataHora;
+        @NotNull(message = "A data e hora do evento são obrigatórias")
+        @Future(message = "A data do evento deve ser futura")
+        LocalDateTime dataHora,
 
-    @NotNull(message = "ID do habitat é obrigatório")
-    private Long localHabitatId;
+        @NotNull(message = "A capacidade máxima é obrigatória")
+        @Positive(message = "A capacidade máxima deve ser um número positivo")
+        Integer capacidadeMaxima,
+
+        List<Long> visitantesIds
+) {
 }

@@ -1,82 +1,141 @@
 package Api_de_zoologico.zoo.controllers;
 
+import Api_de_zoologico.zoo.dtos.VeterinarioDto;
 import Api_de_zoologico.zoo.models.Veterinario;
 import Api_de_zoologico.zoo.services.VeterinarioService;
+import Api_de_zoologico.zoo.utils.RespostaUtil;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/veterinarios")
+@CrossOrigin(origins = "*")
 public class VeterinarioController {
-    private VeterinarioService veterinarioService;
+    private final VeterinarioService veterinarioService;
 
     public VeterinarioController(VeterinarioService veterinarioService) {
         this.veterinarioService = veterinarioService;
     }
 
-    @GetMapping()
-    public ResponseEntity<List<Veterinario>> getAll(){
-        return ResponseEntity.ok(veterinarioService.findAll());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id) {
-        try{
-            return ResponseEntity.ok(veterinarioService.findById(id));
-        }catch (RuntimeException e){
-            return buildErrorResponse("Veterinário não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
+    @GetMapping
+    public ResponseEntity<?> findAll(
+            @RequestParam(required = false) String especialidade,
+            @RequestParam(required = false) String nome) {
+        try {
+            if (especialidade != null && !especialidade.trim().isEmpty()) {
+                return ResponseEntity.ok(veterinarioService.findByEspecialidade(especialidade));
+            }
+            if (nome != null && !nome.trim().isEmpty()) {
+                return ResponseEntity.ok(veterinarioService.findByNome(nome));
+            }
+            return ResponseEntity.ok(veterinarioService.findAll());
+        } catch (RuntimeException e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro ao filtrar veterinários",
+                    e.getMessage(),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (Exception e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro ao buscar veterinários",
+                    "Ocorreu um erro inesperado ao buscar veterinários: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
-    @GetMapping("/especialidade")
-    public ResponseEntity<?> getByEspecialidade(@RequestAttribute String especialidade) {
-        try{
-            return ResponseEntity.ok(veterinarioService.findByEspecialidade(especialidade));
-        }catch (RuntimeException e){
-            return buildErrorResponse("Veterinário não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        try {
+            Veterinario veterinario = veterinarioService.findById(id);
+            return ResponseEntity.ok(veterinario);
+        } catch (RuntimeException e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Veterinário não encontrado",
+                    "Não foi possível encontrar o veterinário com ID: " + id + ". " + e.getMessage(),
+                    HttpStatus.NOT_FOUND
+            );
+        } catch (Exception e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro ao buscar veterinário",
+                    "Ocorreu um erro inesperado ao buscar o veterinário: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
     @PostMapping
-    public ResponseEntity<?> add(@RequestBody Veterinario veterinario) {
-        return ResponseEntity.ok(veterinarioService.create(veterinario));
+    public ResponseEntity<?> create(@Valid @RequestBody VeterinarioDto veterinarioDto) {
+        try {
+            Veterinario veterinarioCriado = veterinarioService.create(veterinarioDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(veterinarioCriado);
+        } catch (RuntimeException e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro ao criar veterinário",
+                    "Não foi possível criar o veterinário. " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (Exception e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro interno do servidor",
+                    "Ocorreu um erro inesperado ao criar o veterinário: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Veterinario veterinario) {
-        try{
-            return ResponseEntity.ok(veterinarioService.update(id, veterinario));
-        }catch (RuntimeException e){
-            return buildErrorResponse("Veterinário não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> update(@PathVariable Long id,
+                                    @Valid @RequestBody VeterinarioDto veterinarioDto) {
+        try {
+            Veterinario veterinarioAtualizado = veterinarioService.update(id, veterinarioDto);
+            return ResponseEntity.ok(veterinarioAtualizado);
+        } catch (RuntimeException e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro ao atualizar veterinário",
+                    "Não foi possível atualizar o veterinário com ID: " + id + ". " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (Exception e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro interno do servidor",
+                    "Ocorreu um erro inesperado ao atualizar o veterinário: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        try{
+        try {
             veterinarioService.delete(id);
-            return ResponseEntity.ok("Veterinario removido");
-        }catch (RuntimeException e){
-            return buildErrorResponse("Veterinário não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity.ok().body(new MensagemResponse("Veterinário removido com sucesso"));
+        } catch (RuntimeException e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro ao remover veterinário",
+                    "Não foi possível remover o veterinário com ID: " + id + ". " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (Exception e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro interno do servidor",
+                    "Ocorreu um erro inesperado ao remover o veterinário: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
+    public static class MensagemResponse {
+        private String mensagem;
 
+        public MensagemResponse(String mensagem) {
+            this.mensagem = mensagem;
+        }
 
-    private ResponseEntity<Map<String, Object>> buildErrorResponse(String error, String message, HttpStatus status){
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", status.value());
-        body.put("error", error);
-        body.put("message", message);
-
-        return ResponseEntity.status(status).body(body);
+        public String getMensagem() {
+            return mensagem;
+        }
     }
-
 }
