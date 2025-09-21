@@ -25,24 +25,25 @@ public class User implements UserDetails {
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name="user_id"),
-            inverseJoinColumns = @JoinColumn(name="role_id")
-    )
     private Set<Role> roles;
 
+    // Um User pode estar vinculado a um Visitante
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Visitante visitante;
+
+    // Ou vinculado a um Funcionário
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Funcionario funcionario;
+
+    // Métodos do UserDetails...
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
     }
 
-    @Override
-    public boolean isAccountNonExpired() { return true; }
-    @Override
-    public boolean isAccountNonLocked() { return true; }
-    @Override
-    public boolean isCredentialsNonExpired() { return true; }
-    @Override
-    public boolean isEnabled() { return true; }
+    @Override public boolean isAccountNonExpired() { return true; }
+    @Override public boolean isAccountNonLocked() { return true; }
+    @Override public boolean isCredentialsNonExpired() { return true; }
+    @Override public boolean isEnabled() { return true; }
 }
+

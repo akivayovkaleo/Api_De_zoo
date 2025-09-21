@@ -15,10 +15,12 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "visitantes")
 public class Visitante {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // dados específicos do visitante
     @Column(nullable = false, length = 100)
     private String nome;
 
@@ -34,7 +36,13 @@ public class Visitante {
     @Column(name = "data_cadastro")
     private LocalDate dataCadastro;
 
+    // eventos em que o visitante se inscreveu
     @JsonIgnore
     @ManyToMany(mappedBy = "visitantes")
     private List<Evento> eventos;
+
+    // Relacionamento com User (login/senha/roles)
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 }
