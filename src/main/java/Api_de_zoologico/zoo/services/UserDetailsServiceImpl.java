@@ -1,6 +1,6 @@
-package com.seuprojeto.zoo.service;
+package Api_de_zoologico.zoo.services;
 
-import com.seuprojeto.zoo.repository.UserRepository;
+import Api_de_zoologico.zoo.repositories.UserRepository;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 

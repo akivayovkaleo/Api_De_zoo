@@ -1,7 +1,7 @@
-package com.seuprojeto.zoo.filter;
+package Api_de_zoologico.zoo.filter;
 
-import com.seuprojeto.zoo.service.JwtService;
-import com.seuprojeto.zoo.service.UserDetailsServiceImpl;
+import Api_de_zoologico.zoo.services.JwtService;
+import Api_de_zoologico.zoo.services.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
@@ -16,10 +16,10 @@ import java.io.IOException;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+    private final Api_de_zoologico.zoo.services.JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
 
-    public JwtAuthFilter(JwtService jwtService, UserDetailsServiceImpl userDetailsService) {
+    public JwtAuthFilter(Api_de_zoologico.zoo.services.JwtService jwtService, UserDetailsServiceImpl userDetailsService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
     }

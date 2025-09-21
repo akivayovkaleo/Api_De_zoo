@@ -1,4 +1,4 @@
-package com.seuprojeto.zoo.service;
+package Api_de_zoologico.zoo.services;
 
 import io.jsonwebtoken.*;
 import org.springframework.security.core.userdetails.UserDetails;
