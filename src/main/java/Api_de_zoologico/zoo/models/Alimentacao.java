@@ -13,14 +13,18 @@ import lombok.NoArgsConstructor;
 @Table(name = "alimentacoes")
 public class Alimentacao {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "tipo_comida", length = 100)
     private String tipoComida;
+
+    @Column(name = "quantidade_diaria")
     private Double quantidadeDiaria;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "animal_id")
+    @JsonIgnore
     private Animal animal;
 }

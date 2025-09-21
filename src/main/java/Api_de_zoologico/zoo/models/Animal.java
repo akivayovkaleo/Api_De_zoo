@@ -25,10 +25,12 @@ public class Animal {
 
     @ManyToOne
     @JoinColumn(name = "habitat_id")
+    @JsonIgnore
     private Habitat habitat;
 
     @ManyToOne
     @JoinColumn(name = "cuidador_id")
+    @JsonIgnore
     private Cuidador cuidador;
 
 
@@ -37,5 +39,6 @@ public class Animal {
 
     @ManyToOne
     @JoinColumn(name = "especie_id")
+    @JsonIgnore
     private Especie especie;
 }

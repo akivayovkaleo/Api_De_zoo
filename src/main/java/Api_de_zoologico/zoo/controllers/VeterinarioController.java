@@ -1,27 +1,29 @@
 package Api_de_zoologico.zoo.controllers;
 
+import Api_de_zoologico.zoo.dtos.VeterinarioDto;
 import Api_de_zoologico.zoo.models.Veterinario;
 import Api_de_zoologico.zoo.services.VeterinarioService;
 import Api_de_zoologico.zoo.utils.RespostaUtil;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/veterinarios")
+@CrossOrigin(origins = "*")
 public class VeterinarioController {
-    private VeterinarioService veterinarioService;
+    private final VeterinarioService veterinarioService;
 
     public VeterinarioController(VeterinarioService veterinarioService) {
         this.veterinarioService = veterinarioService;
     }
+
 
     @GetMapping()
     public ResponseEntity<List<Veterinario>> getAll(){
@@ -49,11 +51,14 @@ public class VeterinarioController {
             return ResponseEntity.ok(veterinarioService.findByEspecialidade(especialidade));
         } catch (RuntimeException e) {
             return RespostaUtil.buildErrorResponse("Veterinário não encontrado", e.getMessage(), HttpStatus.NOT_FOUND
+
+
             );
         }
     }
 
     @PostMapping
+
     @Operation(summary = "Cria um veterinário")
     @ApiResponse(responseCode = "200", description = "Veterinário criado com sucesso")
     public ResponseEntity<?> add(@RequestBody Veterinario veterinario) {
@@ -68,19 +73,42 @@ public class VeterinarioController {
             return ResponseEntity.ok(veterinarioService.update(id, veterinario));
         }catch (RuntimeException e){
             return RespostaUtil.buildErrorResponse("Veterinário não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
+
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        try{
+        try {
             veterinarioService.delete(id);
-            return ResponseEntity.ok("Veterinario removido");
-        }catch (RuntimeException e){
-            return RespostaUtil.buildErrorResponse("Veterinário não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
+
+            return ResponseEntity.ok().body(new MensagemResponse("Veterinário removido com sucesso"));
+        } catch (RuntimeException e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro ao remover veterinário",
+                    "Não foi possível remover o veterinário com ID: " + id + ". " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (Exception e) {
+            return RespostaUtil.buildErrorResponse(
+                    "Erro interno do servidor",
+                    "Ocorreu um erro inesperado ao remover o veterinário: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+
         }
     }
 
+    public static class MensagemResponse {
+        private String mensagem;
 
+        public MensagemResponse(String mensagem) {
+            this.mensagem = mensagem;
+        }
 
+        public String getMensagem() {
+            return mensagem;
+        }
+    }
 }
+

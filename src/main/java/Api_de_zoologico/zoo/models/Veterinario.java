@@ -9,17 +9,19 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "verterinarios")
+@Table(name = "veterinarios")
 public class Veterinario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String nome;
 
+    @Column(unique = true, length = 20)
     private String crmv;
 
+    @Column(length = 50)
     private String especialidade;
-
 }
