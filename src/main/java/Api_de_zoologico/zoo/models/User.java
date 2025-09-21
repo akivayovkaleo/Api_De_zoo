@@ -27,15 +27,12 @@ public class User implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
 
-    // Um User pode estar vinculado a um Visitante
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Visitante visitante;
 
-    // Ou vinculado a um Funcionário
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Funcionario funcionario;
 
-    // Métodos do UserDetails...
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;

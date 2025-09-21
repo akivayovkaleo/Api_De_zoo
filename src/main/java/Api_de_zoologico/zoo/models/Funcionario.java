@@ -21,8 +21,8 @@ public class Funcionario {
     @Column(unique = true, length = 11)
     private String cpf;
 
-    private String cargo; // Ex: "Cuidador", "Veterinário", "Administrador"
-    private String setor; // Ex: "Mamíferos", "Aves"
+    private String cargo;
+    private String setor;
     private Double salario;
 
     @OneToOne
