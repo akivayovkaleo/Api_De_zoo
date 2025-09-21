@@ -17,5 +17,11 @@ public class Role implements GrantedAuthority {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String authority; // exemplo: ROLE_VISITANTE, ROLE_FUNCIONARIO
+    @Column(unique = true, nullable = false)
+    private String name;
+
+    @Override
+    public String getAuthority() {
+        return name;
+    }
 }
