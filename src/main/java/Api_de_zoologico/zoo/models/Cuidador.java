@@ -16,19 +16,10 @@ import java.util.List;
 public class Cuidador {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false, length = 100)
     private String nome;
-
-    @Column(length = 50)
     private String especialidade;
-
-    @Column(length = 20)
     private String turno;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "cuidador", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Animal> animais;
 }
