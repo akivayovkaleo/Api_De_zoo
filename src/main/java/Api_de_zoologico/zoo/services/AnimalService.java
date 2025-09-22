@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class AnimalService {
@@ -31,7 +32,7 @@ public class AnimalService {
     }
 
     public Animal findById(Long id) {
-        return animalRepository.findById(id).orElseThrow(() -> new RuntimeException("Não encontrado"));
+        return animalRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Animal não encontrado"));
     }
 
     public List<Animal> findByIdade(int idadeMin, int indadeMax) {
@@ -50,11 +51,11 @@ public class AnimalService {
     public Animal create(AnimalDto animalDto) {
         Animal animal = new Animal();
 
-        Cuidador cuidador = cuidadorRepository.findById(animalDto.cuidador_id()).orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
-        Habitat habitat = habitatRepository.findById(animalDto.habitat_id()).orElseThrow(() -> new RuntimeException("Habitat não encontrado"));
-        Especie especie = especieRepository.findById(animalDto.especie_id()).orElseThrow(() -> new RuntimeException("Espécie não encontrada"));
+        Cuidador cuidador = cuidadorRepository.findById(animalDto.cuidador_id()).orElseThrow(() -> new NoSuchElementException("Categoria não encontrada"));
+        Habitat habitat = habitatRepository.findById(animalDto.habitat_id()).orElseThrow(() -> new NoSuchElementException("Habitat não encontrado"));
+        Especie especie = especieRepository.findById(animalDto.especie_id()).orElseThrow(() -> new NoSuchElementException("Espécie não encontrada"));
 
-        Alimentacao alimentacao = alimentacaoRepository.findById(animalDto.alimentacao_id()).orElseThrow(() -> new RuntimeException("Alimentação não encontrada"));
+        Alimentacao alimentacao = alimentacaoRepository.findById(animalDto.alimentacao_id()).orElseThrow(() -> new NoSuchElementException("Alimentação não encontrada"));
         ArrayList<Alimentacao> alimentacoes = new ArrayList<>();
         alimentacoes.add(alimentacao);
 
@@ -77,11 +78,11 @@ public class AnimalService {
     public Animal update(Long id, AnimalDto animalDto) {
         Animal animal = findById(id);
 
-        Cuidador cuidador = cuidadorRepository.findById(animalDto.cuidador_id()).orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
-        Habitat habitat = habitatRepository.findById(animalDto.habitat_id()).orElseThrow(() -> new RuntimeException("Habitat não encontrado"));
-        Especie especie = especieRepository.findById(animalDto.especie_id()).orElseThrow(() -> new RuntimeException("Espécie não encontrada"));
+        Cuidador cuidador = cuidadorRepository.findById(animalDto.cuidador_id()).orElseThrow(() -> new NoSuchElementException("Categoria não encontrada"));
+        Habitat habitat = habitatRepository.findById(animalDto.habitat_id()).orElseThrow(() -> new NoSuchElementException("Habitat não encontrado"));
+        Especie especie = especieRepository.findById(animalDto.especie_id()).orElseThrow(() -> new NoSuchElementException("Espécie não encontrada"));
 
-        Alimentacao alimentacao = alimentacaoRepository.findById(animalDto.alimentacao_id()).orElseThrow(() -> new RuntimeException("Alimentação não encontrada"));
+        Alimentacao alimentacao = alimentacaoRepository.findById(animalDto.alimentacao_id()).orElseThrow(() -> new NoSuchElementException("Alimentação não encontrada"));
 
         List<Alimentacao> alimentacoes = animal.getAlimentacoes();
         alimentacoes.add(alimentacao);

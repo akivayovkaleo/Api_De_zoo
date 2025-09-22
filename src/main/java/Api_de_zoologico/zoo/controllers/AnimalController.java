@@ -2,132 +2,127 @@ package Api_de_zoologico.zoo.controllers;
 
 import Api_de_zoologico.zoo.dtos.AnimalDto;
 import Api_de_zoologico.zoo.models.Animal;
-import Api_de_zoologico.zoo.models.Especie;
-import Api_de_zoologico.zoo.models.Veterinario;
 import Api_de_zoologico.zoo.services.AnimalService;
 import Api_de_zoologico.zoo.utils.RespostaUtil;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/animais")
 public class AnimalController {
-    private AnimalService animalService;
+
+    private final AnimalService animalService;
 
     public AnimalController(AnimalService animalService) {
         this.animalService = animalService;
     }
 
     @Operation(summary = "Lista todos os animais")
-    @ApiResponse(responseCode = "200", description = "Animal encontrado com sucesso")
     @GetMapping
-    public ResponseEntity<List<Animal>> findAll() {
-        return ResponseEntity.ok(animalService.findAll());
+    public ResponseEntity<?> listarTodos(
+            @Parameter(description = "Idade mínima") @RequestParam(required = false) Integer idadeMin,
+            @Parameter(description = "Idade máxima") @RequestParam(required = false) Integer idadeMax,
+            @Parameter(description = "Filtra por nome") @RequestParam(required = false) String nome,
+            @Parameter(description = "Filtra por espécie") @RequestParam(required = false) String especie,
+            HttpServletRequest request
+    ) {
+        List<Animal> animais;
+        if(idadeMin != null && idadeMax != null) animais = animalService.findByIdade(idadeMin, idadeMax);
+        else if (nome != null) animais = animalService.findByNome(nome);
+        else if (especie != null) animais = animalService.findByEspecie(especie);
+        else animais = animalService.findAll();
+
+        return ResponseEntity.ok(
+                RespostaUtil.success(animais, "Lista de animais retornada com sucesso", request.getRequestURI())
+        );
     }
 
     @Operation(summary = "Busca um animal pelo Id")
-    @ApiResponse(responseCode = "200", description = "Animal encontrado com sucesso")
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(animalService.findById(id));
-        } catch (RuntimeException e) {
-            return RespostaUtil.
-                    buildErrorResponse("Animal não encontrado",
-                            e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> getById(
+            @Parameter(description = "Id do animal a ser retornado") @PathVariable Long id,
+            HttpServletRequest request
+    ) {
+        Animal animal = animalService.findById(id);
+        return ResponseEntity.ok(
+                RespostaUtil.success(animal, "Animal retornado com sucesso", request.getRequestURI())
+        );
     }
 
-    @GetMapping("/idade")
     @Operation(summary = "Filtra animais por faixa etária")
-    @ApiResponse(responseCode = "200", description = "Lista de animais retornada com sucesso")
-    public ResponseEntity<?> findByIdade(
-            @RequestParam int idadeMin,
-            @RequestParam int idadeMax
+    @GetMapping("/idade")
+    public ResponseEntity<?> listarPorIdade(
+            @Parameter(description = "Idade mínima") @RequestParam int idadeMin,
+            @Parameter(description = "Idade máxima") @RequestParam int idadeMax,
+            HttpServletRequest request
     ) {
-        try {
-            return ResponseEntity.ok(animalService.findByIdade(idadeMin, idadeMax));
-        } catch (RuntimeException e) {
-            return RespostaUtil.buildErrorResponse(
-                    "Falha ao encontrar animais na faixa etária de " + idadeMin + " a " + idadeMax,
-                    e.getMessage(),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        List<Animal> animais = animalService.findByIdade(idadeMin, idadeMax);
+        return ResponseEntity.ok(
+                RespostaUtil.success(animais, "Lista de animais retornada com sucesso", request.getRequestURI())
+        );
     }
 
-
-    @GetMapping("/nome")
     @Operation(summary = "Filtra animais por nome")
-    @ApiResponse(responseCode = "200", description = "Lista de animais retornada com sucesso")
-    public ResponseEntity<?> findBynName(
-            @RequestParam String nome
+    @GetMapping("/nome")
+    public ResponseEntity<?> listarPorNome(
+            @Parameter(description = "Nome do animal") @RequestParam String nome,
+            HttpServletRequest request
     ) {
-        try {
-            return ResponseEntity.ok(animalService.findByNome(nome));
-        } catch (RuntimeException e) {
-            return RespostaUtil.buildErrorResponse(
-                    "Falha ao encontrar animais com nome "+ nome,
-                    e.getMessage(),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        List<Animal> animais = animalService.findByNome(nome);
+        return ResponseEntity.ok(
+                RespostaUtil.success(animais, "Lista de animais retornada com sucesso", request.getRequestURI())
+        );
     }
 
-
+    @Operation(summary = "Filtra animais por espécie")
     @GetMapping("/especie")
-    @Operation(summary = "Filtra animais por especie")
-    @ApiResponse(responseCode = "200", description = "Lista de animais retornada com sucesso")
-    public ResponseEntity<?> findByEsepecie(
-            @RequestParam String especie
+    public ResponseEntity<?> listarPorEspecie(
+            @Parameter(description = "Nome da espécie") @RequestParam String especie,
+            HttpServletRequest request
     ) {
-        try {
-            return ResponseEntity.ok(animalService.findByEspecie(especie));
-        } catch (RuntimeException e) {
-            return RespostaUtil.buildErrorResponse(
-                    "Falha ao encontrar animais da especie "+ especie,
-                    e.getMessage(),
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        List<Animal> animais = animalService.findByEspecie(especie);
+        return ResponseEntity.ok(
+                RespostaUtil.success(animais, "Lista de animais retornada com sucesso", request.getRequestURI())
+        );
     }
 
     @Operation(summary = "Cria um novo animal")
-    @ApiResponse(responseCode = "200", description = "Animal criado com sucesso")
     @PostMapping
-    public ResponseEntity<?> add(@Valid @RequestBody AnimalDto animal) {
-        return ResponseEntity.ok(animalService.create(animal));
+    public ResponseEntity<?> criar(@Valid @RequestBody AnimalDto animalDto, HttpServletRequest request) {
+        Animal animal = animalService.create(animalDto);
+        return ResponseEntity.ok(
+                RespostaUtil.success(animal, "Animal criado com sucesso", request.getRequestURI())
+        );
     }
 
     @Operation(summary = "Atualiza um animal pelo Id")
-    @ApiResponse(responseCode = "200", description = "Animal atualizado com sucesso")
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody AnimalDto animal) {
-        try{
-            return ResponseEntity.ok(animalService.update(id, animal));
-        }catch (RuntimeException e){
-            return RespostaUtil.buildErrorResponse("Animal não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> atualizar(
+            @Parameter(description = "Id do animal a ser atualizado") @PathVariable Long id,
+            @Valid @RequestBody AnimalDto animalDto,
+            HttpServletRequest request
+    ) {
+        Animal animal = animalService.update(id, animalDto);
+        return ResponseEntity.ok(
+                RespostaUtil.success(animal, "Animal atualizado com sucesso", request.getRequestURI())
+        );
     }
 
     @Operation(summary = "Deleta um animal pelo Id")
-    @ApiResponse(responseCode = "200", description = "Animal deletado com sucesso")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        try{
-            animalService.delete(id);
-            return ResponseEntity.ok("Animal removido");
-        }catch (RuntimeException e){
-            return RespostaUtil.buildErrorResponse("Animal não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> deletar(
+            @Parameter(description = "Id do animal a ser deletado") @PathVariable Long id,
+            HttpServletRequest request
+    ) {
+        animalService.delete(id);
+        return ResponseEntity.ok(
+                RespostaUtil.success(null, "Animal deletado com sucesso", request.getRequestURI())
+        );
     }
 }

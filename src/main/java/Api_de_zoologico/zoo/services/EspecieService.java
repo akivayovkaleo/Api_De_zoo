@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class EspecieService {
@@ -32,7 +33,7 @@ public class EspecieService {
     }
 
     public Especie BuscarPorId(Long id) {
-        return especieRepository.findById(id).orElseThrow(()-> new RuntimeException("Não encontrado"));
+        return especieRepository.findById(id).orElseThrow(()-> new NoSuchElementException("Espécie não encontrada"));
     }
 
     public Especie atualizar(Long id, EspecieDto dto) {

@@ -9,6 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -25,7 +28,7 @@ public class HabitatController {
         try {
             return ResponseEntity.ok(habitServ.save(habit));
         } catch (RuntimeException e) {
-            return RespostaUtil.
+            return
                     buildErrorResponse("Falha ao criar habitat",
                             e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
         }
@@ -36,7 +39,7 @@ public class HabitatController {
         try {
             return ResponseEntity.of(Optional.ofNullable(habitServ.findAll()));
         } catch (RuntimeException e) {
-            return RespostaUtil.
+            return
                     buildErrorResponse("Falha ao listar habitats",
                             e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -49,7 +52,7 @@ public class HabitatController {
         try {
             return ResponseEntity.ok(habitServ.findByTipo(tipo));
         } catch (RuntimeException e) {
-            return RespostaUtil.
+            return
                     buildErrorResponse("Falha ao encontrar habitat do tipo " + tipo,
                             e.getMessage(), HttpStatus.NOT_FOUND);
         }
@@ -60,7 +63,7 @@ public class HabitatController {
         try {
             return ResponseEntity.ok(habitServ.findById(id));
         } catch (RuntimeException e) {
-            return RespostaUtil.buildErrorResponse("Falha ao encontrar habitat",
+            return buildErrorResponse("Falha ao encontrar habitat",
                     e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
@@ -70,7 +73,7 @@ public class HabitatController {
         try {
             return ResponseEntity.ok(habitServ.set(id, habitDto));
         } catch (RuntimeException e) {
-            return RespostaUtil.
+            return
                     buildErrorResponse("Falha ao alterar habitat",
                             e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
         }
@@ -83,9 +86,19 @@ public class HabitatController {
 
             return ResponseEntity.ok("Habitat removido");
         } catch (RuntimeException e) {
-            return RespostaUtil.
+            return
                     buildErrorResponse("Falha ao remover habitat",
                             e.getMessage(), HttpStatus.NOT_FOUND);
         }
+    }
+
+    private ResponseEntity<Map<String, Object>> buildErrorResponse(String error, String message, HttpStatus status) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", status.value());
+        body.put("error", error);
+        body.put("message", message);
+
+        return ResponseEntity.status(status).body(body);
     }
 }

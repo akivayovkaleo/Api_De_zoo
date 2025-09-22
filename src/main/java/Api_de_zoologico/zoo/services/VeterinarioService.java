@@ -5,6 +5,7 @@ import Api_de_zoologico.zoo.repositories.VeterinarioRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class VeterinarioService {
@@ -19,7 +20,7 @@ public class VeterinarioService {
     }
 
     public Veterinario findById(Long id){
-        return veterinarioRepository.findById(id).orElseThrow(()-> new RuntimeException("Não encontrado"));
+        return veterinarioRepository.findById(id).orElseThrow(()-> new NoSuchElementException("Veterinário não encontrado"));
     }
 
     public List<Veterinario> findByEspecialidade(String especialidade){

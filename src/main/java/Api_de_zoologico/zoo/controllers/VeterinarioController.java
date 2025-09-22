@@ -35,7 +35,7 @@ public class VeterinarioController {
         try{
             return ResponseEntity.ok(veterinarioService.findById(id));
         }catch (RuntimeException e){
-            return RespostaUtil.buildErrorResponse("Veterinário não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
+            return buildErrorResponse("Veterinário não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -48,7 +48,7 @@ public class VeterinarioController {
         try {
             return ResponseEntity.ok(veterinarioService.findByEspecialidade(especialidade));
         } catch (RuntimeException e) {
-            return RespostaUtil.buildErrorResponse("Veterinário não encontrado", e.getMessage(), HttpStatus.NOT_FOUND
+            return buildErrorResponse("Veterinário não encontrado", e.getMessage(), HttpStatus.NOT_FOUND
             );
         }
     }
@@ -67,7 +67,7 @@ public class VeterinarioController {
         try{
             return ResponseEntity.ok(veterinarioService.update(id, veterinario));
         }catch (RuntimeException e){
-            return RespostaUtil.buildErrorResponse("Veterinário não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
+            return buildErrorResponse("Veterinário não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -77,8 +77,17 @@ public class VeterinarioController {
             veterinarioService.delete(id);
             return ResponseEntity.ok("Veterinario removido");
         }catch (RuntimeException e){
-            return RespostaUtil.buildErrorResponse("Veterinário não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
+            return buildErrorResponse("Veterinário não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
         }
+    }
+    private ResponseEntity<Map<String, Object>> buildErrorResponse(String error, String message, HttpStatus status) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", status.value());
+        body.put("error", error);
+        body.put("message", message);
+
+        return ResponseEntity.status(status).body(body);
     }
 
 

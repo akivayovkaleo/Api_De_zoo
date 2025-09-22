@@ -5,6 +5,7 @@ import Api_de_zoologico.zoo.models.Animal;
 import Api_de_zoologico.zoo.repositories.AlimentacaoRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class AlimentacaoService {
@@ -19,7 +20,7 @@ public class AlimentacaoService {
     }
 
     public Alimentacao findById(Long id) {
-        return alimentacaoRepository.findById(id).orElseThrow(()->new RuntimeException("Não Encontrado"));
+        return alimentacaoRepository.findById(id).orElseThrow(()->new NoSuchElementException("Alimentação não Encontrada"));
     }
 
     public Alimentacao update(Long id, Alimentacao alimentacaoAtualizado) {

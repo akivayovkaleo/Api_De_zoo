@@ -5,6 +5,7 @@ import Api_de_zoologico.zoo.repositories.CuidadorRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 
@@ -24,7 +25,7 @@ public class CuidadorService {
     }
 
     public Cuidador findById(Long id) {
-        return cuidadorRepository.findById(id).orElseThrow(()-> new RuntimeException("Não encontrado"));
+        return cuidadorRepository.findById(id).orElseThrow(()-> new NoSuchElementException("Cuidador não encontrado"));
     }
 
     public List<Cuidador> findByEspecialidade(String especialidade) {

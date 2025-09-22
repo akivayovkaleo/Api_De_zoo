@@ -2,98 +2,105 @@ package Api_de_zoologico.zoo.controllers;
 
 import Api_de_zoologico.zoo.models.Cuidador;
 import Api_de_zoologico.zoo.services.CuidadorService;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
+import Api_de_zoologico.zoo.utils.RespostaUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static Api_de_zoologico.zoo.utils.RespostaUtil.buildErrorResponse;
 
 @RestController
 @RequestMapping("/cuidadores")
 public class CuidadorController {
-    private CuidadorService cuidadorService;
+
+    private final CuidadorService cuidadorService;
 
     public CuidadorController(CuidadorService cuidadorService) {
         this.cuidadorService = cuidadorService;
     }
 
+    @Operation(summary = "Cria um novo cuidador")
     @PostMapping
-    public ResponseEntity<Cuidador> create(@RequestBody Cuidador cuidador) {
-        return ResponseEntity.ok(cuidadorService.create(cuidador));
+    public ResponseEntity<?> criar(
+            @Valid @RequestBody Cuidador cuidador,
+            HttpServletRequest request
+    ) {
+        Cuidador c = cuidadorService.create(cuidador);
+        return ResponseEntity.ok(
+                RespostaUtil.success(c, "Cuidador criado com sucesso", request.getRequestURI())
+        );
     }
 
-    @GetMapping()
-    public ResponseEntity<?> getAll(){
-        return ResponseEntity.ok(cuidadorService.getAll());
+    @Operation(summary = "Lista todos os cuidadores")
+    @GetMapping
+    public ResponseEntity<?> listarTodos(HttpServletRequest request) {
+        List<Cuidador> cuidadores = cuidadorService.getAll();
+        return ResponseEntity.ok(
+                RespostaUtil.success(cuidadores, "Lista de cuidadores retornada com sucesso", request.getRequestURI())
+        );
     }
 
+    @Operation(summary = "Busca um cuidador pelo Id")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id){
-            try {
-                return ResponseEntity.ok(cuidadorService.findById(id));
-            }catch (RuntimeException e) {
-                return buildErrorResponse("Cuidador não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
-            }
+    public ResponseEntity<?> getById(
+            @Parameter(description = "Id do cuidador") @PathVariable Long id,
+            HttpServletRequest request
+    ) {
+        Cuidador c = cuidadorService.findById(id);
+        return ResponseEntity.ok(
+                RespostaUtil.success(c, "Cuidador retornado com sucesso", request.getRequestURI())
+        );
+    }
 
-        }
-
+    @Operation(summary = "Filtra cuidadores por especialidade")
     @GetMapping("/especialidade")
-    public ResponseEntity<?> getByEspecialidade(@RequestParam String especialidade){
-        try {
-            return ResponseEntity.ok(cuidadorService.findByEspecialidade(especialidade));
-        }catch (RuntimeException e) {
-            return buildErrorResponse("Cuidador não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> getByEspecialidade(
+            @Parameter(description = "Especialidade do cuidador") @RequestParam String especialidade,
+            HttpServletRequest request
+    ) {
+        List<Cuidador> cuidadores = cuidadorService.findByEspecialidade(especialidade);
+        return ResponseEntity.ok(
+                RespostaUtil.success(cuidadores, "Lista de cuidadores retornada com sucesso", request.getRequestURI())
+        );
     }
 
+    @Operation(summary = "Filtra cuidadores por turno")
     @GetMapping("/turno")
-    public ResponseEntity<?> getByTurno(@RequestParam String turno){
-        try {
-            return ResponseEntity.ok(cuidadorService.findByTurno(turno));
-        }catch (RuntimeException e) {
-            return buildErrorResponse("Cuidador não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> getByTurno(
+            @Parameter(description = "Turno do cuidador") @RequestParam String turno,
+            HttpServletRequest request
+    ) {
+        List<Cuidador> cuidadores = cuidadorService.findByTurno(turno);
+        return ResponseEntity.ok(
+                RespostaUtil.success(cuidadores, "Lista de cuidadores retornada com sucesso", request.getRequestURI())
+        );
     }
 
-
+    @Operation(summary = "Atualiza um cuidador pelo Id")
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Cuidador cuidador) {
-        try {
-            return ResponseEntity.ok(cuidadorService.update(id, cuidador));
-        }catch (RuntimeException e) {
-            return buildErrorResponse("Cuidador não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> atualizar(
+            @Parameter(description = "Id do cuidador") @PathVariable Long id,
+            @Valid @RequestBody Cuidador cuidador,
+            HttpServletRequest request
+    ) {
+        Cuidador c = cuidadorService.update(id, cuidador);
+        return ResponseEntity.ok(
+                RespostaUtil.success(c, "Cuidador atualizado com sucesso", request.getRequestURI())
+        );
     }
 
+    @Operation(summary = "Deleta um cuidador pelo Id")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        try {
-            cuidadorService.delete(id);
-            return ResponseEntity.ok("Cuidador removido");
-        }catch (DataIntegrityViolationException e) {
-            return buildErrorResponse("Erro de integridade referencial",
-                    "Não é possível deletar o cuidador porque existem animais vinculados a ele.",
-                    HttpStatus.CONFLICT);}
-
-        catch (RuntimeException e) {
-            return buildErrorResponse("Cuidador não encontrado", e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-
-    }
-
-    private ResponseEntity<Map<String, Object>> buildErrorResponse(String error, String message, HttpStatus status) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", status.value());
-        body.put("error", error);
-        body.put("message", message);
-
-        return ResponseEntity.status(status).body(body);
+    public ResponseEntity<?> deletar(
+            @Parameter(description = "Id do cuidador") @PathVariable Long id,
+            HttpServletRequest request
+    ) {
+        cuidadorService.delete(id);
+        return ResponseEntity.ok(
+                RespostaUtil.success(null, "Cuidador deletado com sucesso", request.getRequestURI())
+        );
     }
 }

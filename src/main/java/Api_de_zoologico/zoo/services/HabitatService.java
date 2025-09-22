@@ -6,6 +6,7 @@ import Api_de_zoologico.zoo.repositories.HabitatRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class HabitatService {
@@ -28,7 +29,7 @@ public class HabitatService {
     }
 
     public Habitat findById(Long id) {
-        return habitRepo.findById(id).orElseThrow(()-> new RuntimeException("Não encontrado"));
+        return habitRepo.findById(id).orElseThrow(()-> new NoSuchElementException("Habitat não encontrado"));
     }
 
     public Habitat set(Long id, HabitatDto habitDto) {
