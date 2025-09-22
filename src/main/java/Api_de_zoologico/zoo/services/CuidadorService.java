@@ -1,5 +1,6 @@
 package Api_de_zoologico.zoo.services;
 
+import Api_de_zoologico.zoo.dtos.CuidadorDto;
 import Api_de_zoologico.zoo.models.Cuidador;
 import Api_de_zoologico.zoo.repositories.CuidadorRepository;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,13 @@ public class CuidadorService {
         this.cuidadorRepository = cuidadorRepository;
     }
 
-    public Cuidador create(Cuidador cuidador) {
+    public Cuidador create(CuidadorDto cuidadorDto) {
+        Cuidador cuidador = new Cuidador();
+        cuidador.setNome(cuidadorDto.nome());
+        cuidador.setTurno(cuidadorDto.turno());
+        cuidador.setEspecialidade(cuidadorDto.especialidade());
+        cuidador.setEmail(cuidadorDto.email());
+
         return cuidadorRepository.save(cuidador);
     }
 
@@ -36,12 +43,13 @@ public class CuidadorService {
         return cuidadorRepository.findByTurno(turno);
     }
 
-    public Cuidador update(Long id,  Cuidador cuidadorAtualizado) {
+    public Cuidador update(Long id,  CuidadorDto cuidadorDto) {
         Cuidador cuidador = findById(id);
-        cuidador.setNome(cuidadorAtualizado.getNome());
-        cuidador.setTurno(cuidadorAtualizado.getTurno());
-        cuidador.setEspecialidade(cuidadorAtualizado.getEspecialidade());
-        cuidador.setEmail(cuidadorAtualizado.getEmail());
+        cuidador.setNome(cuidadorDto.nome());
+        cuidador.setTurno(cuidadorDto.turno());
+        cuidador.setEspecialidade(cuidadorDto.especialidade());
+        cuidador.setEmail(cuidadorDto.email());
+
         return cuidadorRepository.save(cuidador);
     }
 

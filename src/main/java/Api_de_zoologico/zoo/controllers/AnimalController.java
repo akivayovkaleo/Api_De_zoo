@@ -8,10 +8,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/animais")
@@ -23,7 +25,7 @@ public class AnimalController {
         this.animalService = animalService;
     }
 
-    @Operation(summary = "Lista todos os animais")
+    @Operation(summary = "Lista todos os animais ou filtra por idade, nome e espécie")
     @GetMapping
     public ResponseEntity<?> listarTodos(
             @Parameter(description = "Idade mínima") @RequestParam(required = false) Integer idadeMin,
@@ -32,14 +34,28 @@ public class AnimalController {
             @Parameter(description = "Filtra por espécie") @RequestParam(required = false) String especie,
             HttpServletRequest request
     ) {
-        List<Animal> animais;
-        if(idadeMin != null && idadeMax != null) animais = animalService.findByIdade(idadeMin, idadeMax);
-        else if (nome != null) animais = animalService.findByNome(nome);
-        else if (especie != null) animais = animalService.findByEspecie(especie);
-        else animais = animalService.findAll();
+        List<Animal> animais = animalService.findAll();
+        String msg = "Lista de animais retornada com sucesso";
+
+        if (idadeMin != null && idadeMax != null) {
+            animais = animalService.findByIdade(idadeMin, idadeMax);
+            msg = "Lista de animais filtrada por idade";
+        }
+
+        else if (nome != null && !nome.isEmpty()) {
+            animais = animalService.findByNome(nome);
+            msg = "Lista de animais filtrada por nome";
+        }
+
+        else if (especie != null && !especie.isEmpty()) {
+            animais = animalService.findByEspecie(especie);
+            msg = "Lista de animais filtrada por espécie";
+        }
+
+        if (animais.isEmpty()) {msg = "Lista vazia";}
 
         return ResponseEntity.ok(
-                RespostaUtil.success(animais, "Lista de animais retornada com sucesso", request.getRequestURI())
+                RespostaUtil.success(animais, msg, request.getRequestURI())
         );
     }
 
@@ -55,52 +71,15 @@ public class AnimalController {
         );
     }
 
-    @Operation(summary = "Filtra animais por faixa etária")
-    @GetMapping("/idade")
-    public ResponseEntity<?> listarPorIdade(
-            @Parameter(description = "Idade mínima") @RequestParam int idadeMin,
-            @Parameter(description = "Idade máxima") @RequestParam int idadeMax,
-            HttpServletRequest request
-    ) {
-        List<Animal> animais = animalService.findByIdade(idadeMin, idadeMax);
-        return ResponseEntity.ok(
-                RespostaUtil.success(animais, "Lista de animais retornada com sucesso", request.getRequestURI())
-        );
-    }
-
-    @Operation(summary = "Filtra animais por nome")
-    @GetMapping("/nome")
-    public ResponseEntity<?> listarPorNome(
-            @Parameter(description = "Nome do animal") @RequestParam String nome,
-            HttpServletRequest request
-    ) {
-        List<Animal> animais = animalService.findByNome(nome);
-        return ResponseEntity.ok(
-                RespostaUtil.success(animais, "Lista de animais retornada com sucesso", request.getRequestURI())
-        );
-    }
-
-    @Operation(summary = "Filtra animais por espécie")
-    @GetMapping("/especie")
-    public ResponseEntity<?> listarPorEspecie(
-            @Parameter(description = "Nome da espécie") @RequestParam String especie,
-            HttpServletRequest request
-    ) {
-        List<Animal> animais = animalService.findByEspecie(especie);
-        return ResponseEntity.ok(
-                RespostaUtil.success(animais, "Lista de animais retornada com sucesso", request.getRequestURI())
-        );
-    }
-
     @Operation(summary = "Cria um novo animal")
     @PostMapping
     public ResponseEntity<?> criar(
             @Valid @RequestBody AnimalDto animalDto,
-            HttpServletRequest request) {
+            HttpServletRequest request
+    ) {
         Animal animal = animalService.create(animalDto);
-        return ResponseEntity.ok(
-                RespostaUtil.success(animal, "Animal criado com sucesso", request.getRequestURI())
-        );
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(RespostaUtil.success(animal, "Animal criado com sucesso", request.getRequestURI()));
     }
 
     @Operation(summary = "Atualiza um animal pelo Id")

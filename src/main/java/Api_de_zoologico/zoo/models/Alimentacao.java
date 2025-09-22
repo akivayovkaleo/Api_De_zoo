@@ -19,11 +19,8 @@ public class Alimentacao {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotBlank(message = "O tipo de comida não pode ser vazio")
     private String tipoComida;
 
-    @NotNull(message = "A quantidade diária é obrigatória")
-    @Positive(message = "A quantidade diária deve ser positiva")
     private Double quantidadeDiaria;
 
     @JsonIgnore

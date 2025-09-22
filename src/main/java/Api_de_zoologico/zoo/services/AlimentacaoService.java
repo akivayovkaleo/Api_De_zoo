@@ -1,8 +1,10 @@
 package Api_de_zoologico.zoo.services;
 
+import Api_de_zoologico.zoo.dtos.AlimentacaoDto;
 import Api_de_zoologico.zoo.models.Alimentacao;
 import Api_de_zoologico.zoo.models.Animal;
 import Api_de_zoologico.zoo.repositories.AlimentacaoRepository;
+import Api_de_zoologico.zoo.repositories.AnimalRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -10,12 +12,20 @@ import java.util.NoSuchElementException;
 @Service
 public class AlimentacaoService {
     private final AlimentacaoRepository alimentacaoRepository;
+    private final AnimalService animalService;
 
-    public AlimentacaoService(AlimentacaoRepository alimentacaoRepository) {
+    public AlimentacaoService(AlimentacaoRepository alimentacaoRepository, AnimalService animalService) {
         this.alimentacaoRepository = alimentacaoRepository;
+        this.animalService = animalService;
     }
 
-    public Alimentacao create(Alimentacao alimentacao) {
+    public Alimentacao create(AlimentacaoDto alimentacaodto) {
+        Alimentacao alimentacao = new Alimentacao();
+        Animal animal = animalService.findById(alimentacaodto.animal_id());
+        alimentacao.setAnimal(animal);
+        alimentacao.setQuantidadeDiaria(alimentacaodto.quantidadeDiaria());
+        alimentacao.setTipoComida(alimentacaodto.tipoComida());
+
         return alimentacaoRepository.save(alimentacao);
     }
 
@@ -23,11 +33,15 @@ public class AlimentacaoService {
         return alimentacaoRepository.findById(id).orElseThrow(()->new NoSuchElementException("Alimentação não Encontrada"));
     }
 
-    public Alimentacao update(Long id, Alimentacao alimentacaoAtualizado) {
+    public Alimentacao update(Long id, AlimentacaoDto alimentacaodto) {
         Alimentacao alimentacao = findById(id);
-        alimentacao.setAnimal(alimentacaoAtualizado.getAnimal());
-        alimentacao.setQuantidadeDiaria(alimentacaoAtualizado.getQuantidadeDiaria());
-        alimentacao.setTipoComida(alimentacaoAtualizado.getTipoComida());
+        if (alimentacaodto.animal_id() != null){
+            Animal animal = animalService.findById(alimentacaodto.animal_id());
+            alimentacao.setAnimal(animal);
+        }
+        alimentacao.setQuantidadeDiaria(alimentacaodto.quantidadeDiaria());
+        alimentacao.setTipoComida(alimentacaodto.tipoComida());
+
         return alimentacaoRepository.save(alimentacao);
     }
 

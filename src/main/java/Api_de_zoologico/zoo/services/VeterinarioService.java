@@ -1,5 +1,6 @@
 package Api_de_zoologico.zoo.services;
 
+import Api_de_zoologico.zoo.dtos.VeterinarioDto;
 import Api_de_zoologico.zoo.models.Veterinario;
 import Api_de_zoologico.zoo.repositories.VeterinarioRepository;
 import org.springframework.stereotype.Service;
@@ -27,15 +28,20 @@ public class VeterinarioService {
         return veterinarioRepository.findByEspecialidade(especialidade);
     }
     
-    public Veterinario create(Veterinario veterinario){
+    public Veterinario create(VeterinarioDto veterinarioDto){
+        Veterinario veterinario = new Veterinario();
+        veterinario.setNome(veterinarioDto.nome());
+        veterinario.setCrmv(veterinarioDto.crmv());
+        veterinario.setEspecialidade(veterinarioDto.especialidade());
+
         return veterinarioRepository.save(veterinario);
     }
 
-    public Veterinario update(Long id, Veterinario veterinarioAtualizado){
+    public Veterinario update(Long id, VeterinarioDto veterinarioDto){
         Veterinario veterinario = findById(id);
-        veterinario.setNome(veterinarioAtualizado.getNome());
-        veterinario.setCrmv(veterinarioAtualizado.getCrmv());
-        veterinario.setEspecialidade(veterinarioAtualizado.getEspecialidade());
+        veterinario.setNome(veterinarioDto.nome());
+        veterinario.setCrmv(veterinarioDto.crmv());
+        veterinario.setEspecialidade(veterinarioDto.especialidade());
         return veterinarioRepository.save(veterinario);
     }
 

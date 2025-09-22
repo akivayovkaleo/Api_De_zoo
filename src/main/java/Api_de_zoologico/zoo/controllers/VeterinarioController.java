@@ -1,5 +1,6 @@
 package Api_de_zoologico.zoo.controllers;
 
+import Api_de_zoologico.zoo.dtos.VeterinarioDto;
 import Api_de_zoologico.zoo.models.Veterinario;
 import Api_de_zoologico.zoo.services.VeterinarioService;
 import Api_de_zoologico.zoo.utils.RespostaUtil;
@@ -23,102 +24,72 @@ public class VeterinarioController {
         this.veterinarioService = veterinarioService;
     }
 
+    @Operation(summary = "Lista todos os veterinários ou filtra por especialidade")
     @GetMapping
-    @Operation(
-            summary = "Lista todos os veterinários ou filtra por especialidade"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Lista de veterinários retornada com sucesso"
-    )
-    public ResponseEntity<?> getAll(
+    public ResponseEntity<?> listar(
             @RequestParam(required = false) String especialidade,
             HttpServletRequest request
     ) {
         List<Veterinario> veterinarios;
+        String msg;
 
-        if (especialidade != null && !especialidade.isEmpty()) {
+        if (especialidade != null && !especialidade.isEmpty()){
             veterinarios = veterinarioService.findByEspecialidade(especialidade);
-            return ResponseEntity.ok(
-                    RespostaUtil.success(veterinarios, "Lista de veterinários filtrada por especialidade", request.getRequestURI())
-            );
+            msg = "Lista de veterinários filtrada por especialidade";
+        }
+        else {
+            veterinarios = veterinarioService.findAll();
+            msg = "Lista de veterinários retornada com sucesso";
         }
 
-        veterinarios = veterinarioService.findAll();
+        if (veterinarios.isEmpty()) {msg = "Lista vazia";}
+
         return ResponseEntity.ok(
-                RespostaUtil.success(veterinarios, "Lista de veterinários retornada com sucesso", request.getRequestURI())
-        );
+                RespostaUtil.success(veterinarios, msg, request.getRequestURI()));
     }
 
+    @Operation(summary = "Busca um veterinário pelo ID")
     @GetMapping("/{id}")
-    @Operation(
-            summary = "Busca um veterinário pelo ID"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Veterinário encontrado com sucesso"
-    )
-    public ResponseEntity<?> getById(
+    public ResponseEntity<?> findById(
             @PathVariable Long id,
             HttpServletRequest request
     ) {
         Veterinario vet = veterinarioService.findById(id);
         return ResponseEntity.ok(
-                RespostaUtil.success(vet, "Veterinário encontrado", request.getRequestURI())
-        );
+                RespostaUtil.success(vet, "Veterinário encontrado", request.getRequestURI()));
     }
 
+    @Operation(summary = "Cria um veterinário")
     @PostMapping
-    @Operation(
-            summary = "Cria um veterinário"
-    )
-    @ApiResponse(
-            responseCode = "201",
-            description = "Veterinário criado com sucesso"
-    )
-    public ResponseEntity<?> add(
-            @RequestBody @Valid Veterinario veterinario,
+    public ResponseEntity<?> create(
+            @RequestBody @Valid VeterinarioDto veterinario,
             HttpServletRequest request
     ) {
         Veterinario created = veterinarioService.create(veterinario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                RespostaUtil.success(created, "Veterinário criado com sucesso", request.getRequestURI())
-        );
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(RespostaUtil.success(created, "Veterinário criado com sucesso", request.getRequestURI()));
     }
 
+    @Operation(summary = "Atualiza um veterinário pelo ID")
     @PutMapping("/{id}")
-    @Operation(
-            summary = "Atualiza um veterinário a partir do ID"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Veterinário atualizado com sucesso"
-    )
     public ResponseEntity<?> update(
             @PathVariable Long id,
-            @RequestBody @Valid Veterinario veterinario,
-            HttpServletRequest request) {
+            @RequestBody @Valid VeterinarioDto veterinario,
+            HttpServletRequest request
+    ) {
         Veterinario updated = veterinarioService.update(id, veterinario);
         return ResponseEntity.ok(
-                RespostaUtil.success(updated, "Veterinário atualizado com sucesso", request.getRequestURI())
-        );
+                RespostaUtil.success(updated, "Veterinário atualizado com sucesso", request.getRequestURI()));
     }
 
+    @Operation(summary = "Remove um veterinário pelo ID")
     @DeleteMapping("/{id}")
-    @Operation(
-            summary = "Remove um veterinário pelo ID"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Veterinário removido com sucesso"
-    )
     public ResponseEntity<?> delete(
             @PathVariable Long id,
             HttpServletRequest request
     ) {
         veterinarioService.delete(id);
         return ResponseEntity.ok(
-                RespostaUtil.success(null, "Veterinário removido com sucesso", request.getRequestURI())
-        );
+                RespostaUtil.success(null, "Veterinário removido com sucesso", request.getRequestURI()));
     }
 }

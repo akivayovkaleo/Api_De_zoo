@@ -1,5 +1,6 @@
 package Api_de_zoologico.zoo.services;
 
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,10 @@ public class EmailService {
         message.setText(text);
         message.setFrom("zoologicotacademy@gmail.com");
 
-        mailSender.send(message);
+        try {
+            mailSender.send(message);
+        } catch (MailException e) {
+            throw new RuntimeException("Falha ao enviar email", e);
+        }
     }
 }

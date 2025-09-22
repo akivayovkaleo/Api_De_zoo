@@ -17,7 +17,7 @@ public class EspecieService {
     @Autowired
     private EspecieRepository especieRepository;
 
-    public Especie criar(@NotNull EspecieDto dto) {
+    public Especie criar(EspecieDto dto) {
         Especie especie = new Especie();
         especie.setNome(dto.nome());
         especie.setDescricao(dto.descricao());
@@ -56,7 +56,7 @@ public class EspecieService {
     }
 
     public List<Especie> BuscarPorFamilia(String familia) {
-        return especieRepository.findByNomeContainingIgnoreCase(familia);
+        return especieRepository.findByFamilia(familia);
     }
 
     public List<Especie> buscarPorClasse(String classe) {

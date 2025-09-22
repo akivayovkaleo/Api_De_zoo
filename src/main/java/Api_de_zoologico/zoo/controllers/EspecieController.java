@@ -5,14 +5,15 @@ import Api_de_zoologico.zoo.models.Especie;
 import Api_de_zoologico.zoo.services.EspecieService;
 import Api_de_zoologico.zoo.utils.RespostaUtil;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/especies")
@@ -24,88 +25,63 @@ public class EspecieController {
         this.especieService = especieService;
     }
 
+    @Operation(summary = "Cria uma nova espécie")
     @PostMapping
-    @Operation(
-            summary = "Cria uma nova espécie"
-    )
-    @ApiResponse(
-            responseCode = "201",
-            description = "Espécie criada com sucesso"
-    )
     public ResponseEntity<?> create(
             @Valid @RequestBody EspecieDto dto,
             HttpServletRequest request) {
         Especie especie = especieService.criar(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                RespostaUtil.success(especie, "Espécie criada com sucesso", request.getRequestURI())
-        );
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(RespostaUtil.success(especie, "Espécie criada com sucesso", request.getRequestURI()));
     }
 
+    @Operation(summary = "Lista todas as espécies ou filtra por nome, família ou classe")
     @GetMapping
-    @Operation(
-            summary = "Lista todas as espécies ou filtra por nome, família ou classe"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Lista de espécies retornada com sucesso"
-    )
     public ResponseEntity<?> listar(
-            @RequestParam(required = false) String nome,
-            @RequestParam(required = false) String familia,
-            @RequestParam(required = false) String classe,
+            @Parameter(description = "Filtra por nome") @RequestParam(required = false) String nome,
+            @Parameter(description = "Filtra por família") @RequestParam(required = false) String familia,
+            @Parameter(description = "Filtra por classe") @RequestParam(required = false) String classe,
             HttpServletRequest request
     ) {
-        List<Especie> especies;
+        List<Especie> especies = especieService.listarTodos();
+        String msg = "Lista de espécies retornada com sucesso";
 
         if (nome != null && !nome.isEmpty()) {
             especies = especieService.BuscarPorNome(nome);
-        } else if (familia != null && !familia.isEmpty()) {
-            especies = especieService.BuscarPorFamilia(familia);
-        } else if (classe != null && !classe.isEmpty()) {
-            especies = especieService.buscarPorClasse(classe);
-        } else {
-            especies = especieService.listarTodos();
+            msg = "Lista filtrada por nome";
         }
 
+        else if (familia != null && !familia.isEmpty()) {
+            especies = especieService.BuscarPorFamilia(familia);
+            msg = "Lista filtrada por família";
+        }
+
+        else if (classe != null && !classe.isEmpty()) {
+            especies = especieService.buscarPorClasse(classe);
+            msg = "Lista filtrada por classe";
+        }
+        if (especies.isEmpty()) {msg = "Lista vazia";}
+
         return ResponseEntity.ok(
-                RespostaUtil.success(especies, "Lista de espécies retornada com sucesso", request.getRequestURI())
+                RespostaUtil.success(especies, msg, request.getRequestURI())
         );
     }
 
+    @Operation(summary = "Busca uma espécie pelo ID")
     @GetMapping("/{id}")
-    @Operation(
-            summary = "Busca uma espécie pelo ID"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Espécie encontrada com sucesso")
-    @ApiResponse(
-            responseCode = "404",
-            description = "Espécie não encontrada"
-    )
     public ResponseEntity<?> findById(
-            @PathVariable Long id,
+            @Parameter(description = "Id da espécie") @PathVariable Long id,
             HttpServletRequest request) {
         Especie especie = especieService.BuscarPorId(id);
         return ResponseEntity.ok(
-                RespostaUtil.success(especie, "Espécie encontrada", request.getRequestURI())
+                RespostaUtil.success(especie, "Espécie encontrada com sucesso", request.getRequestURI())
         );
     }
 
+    @Operation(summary = "Atualiza uma espécie existente")
     @PutMapping("/{id}")
-    @Operation(
-            summary = "Atualiza uma espécie existente"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Espécie atualizada com sucesso"
-    )
-    @ApiResponse(
-            responseCode = "404",
-            description = "Espécie não encontrada"
-    )
     public ResponseEntity<?> update(
-            @PathVariable Long id,
+            @Parameter(description = "Id da espécie") @PathVariable Long id,
             @Valid @RequestBody EspecieDto dto,
             HttpServletRequest request) {
         Especie updated = especieService.atualizar(id, dto);
@@ -114,20 +90,10 @@ public class EspecieController {
         );
     }
 
+    @Operation(summary = "Remove uma espécie pelo ID")
     @DeleteMapping("/{id}")
-    @Operation(
-            summary = "Remove uma espécie pelo ID"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Espécie removida com sucesso"
-    )
-    @ApiResponse(
-            responseCode = "404",
-            description = "Espécie não encontrada"
-    )
     public ResponseEntity<?> delete(
-            @PathVariable Long id,
+            @Parameter(description = "Id da espécie") @PathVariable Long id,
             HttpServletRequest request) {
         especieService.deletar(id);
         return ResponseEntity.ok(

@@ -16,8 +16,12 @@ public class HabitatService {
         this.habitRepo = habitRepo;
     }
 
-    public Habitat save(Habitat habit) {
-        return habitRepo.save(habit);
+    public Habitat save(HabitatDto habit) {
+        Habitat habitat = new Habitat();
+        habitat.setNome(habit.nome());
+        habitat.setTipo(habit.tipo());
+        habitat.setCapacidadeAnimal(habit.capacidadeAnimal());
+        return habitRepo.save(habitat);
     }
 
     public List<Habitat> findAll() {
@@ -42,6 +46,7 @@ public class HabitatService {
     }
 
     public void delete(Long id) {
-        habitRepo.deleteById(id);
+        Habitat habitat = findById(id);
+        habitRepo.delete(habitat);
     }
 }

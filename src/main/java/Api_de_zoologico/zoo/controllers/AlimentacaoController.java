@@ -1,5 +1,6 @@
 package Api_de_zoologico.zoo.controllers;
 
+import Api_de_zoologico.zoo.dtos.AlimentacaoDto;
 import Api_de_zoologico.zoo.models.Alimentacao;
 import Api_de_zoologico.zoo.services.AlimentacaoService;
 import Api_de_zoologico.zoo.utils.RespostaUtil;
@@ -12,44 +13,45 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/alimentacoes")
 public class AlimentacaoController {
-    private AlimentacaoService alimentServ;
+
+    private final AlimentacaoService alimentServ;
 
     public AlimentacaoController(AlimentacaoService alimentServ) {
         this.alimentServ = alimentServ;
     }
 
-    @Operation(
-            summary = "Cria um novo alimento"
-    )
+    @Operation(summary = "Cria um novo alimento")
     @PostMapping
-    public ResponseEntity<Alimentacao> create(@Valid @RequestBody Alimentacao alimentacao){
-        return ResponseEntity.status(HttpStatus.CREATED).body(alimentServ.create(alimentacao));
+    public ResponseEntity<?> create(
+            @Valid @RequestBody AlimentacaoDto alimentacao,
+            HttpServletRequest request
+    ){
+        Alimentacao created = alimentServ.create(alimentacao);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(RespostaUtil.success(created, "Alimentação criada com sucesso", request.getRequestURI()));
     }
 
-    @Operation(
-            summary = "Busca um alimento pelo Id"
-    )
+    @Operation(summary = "Busca um alimento pelo Id")
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(
             @Parameter(description = "Id do alimento a ser retornado")
             @PathVariable Long id,
             HttpServletRequest request
     ) {
-        Alimentacao alimentacao = alimentServ.findById(id);
-        return ResponseEntity.ok(RespostaUtil.success(alimentacao, "Alimentação retornada com sucesso", request.getRequestURI()));
+        Alimentacao alimentacao = alimentServ.findById(id); // lança NoSuchElementException se não existir
+        return ResponseEntity.ok(
+                RespostaUtil.success(alimentacao, "Alimentação retornada com sucesso", request.getRequestURI())
+        );
     }
 
     @Operation(
             summary = "Lista todas as alimentações",
-            description = "Retorna a lista de alimentações. " +
-                    "É possível filtrar por tipo de comida e/ou por ID do animal. " +
-                    "Se nenhum parâmetro for fornecido, retorna todas as alimentações."
+            description = "Retorna todas as alimentações ou filtra por tipo de comida e/ou por ID do animal."
     )
     @GetMapping
     public ResponseEntity<?> listar(
@@ -58,41 +60,42 @@ public class AlimentacaoController {
             @RequestParam(required = false) Long animal_id,
             HttpServletRequest request
     ) {
-        List<Alimentacao> alimentacoes;
+        List<Alimentacao> alimentacoes = alimentServ.getAll();
+        String msg = "Lista de alimentações retornada com sucesso";
 
         if (tipoComida != null && !tipoComida.isEmpty()) {
             alimentacoes = alimentServ.buscarPorTipoComida(tipoComida);
-        } else if (animal_id != null) {
-            alimentacoes = alimentServ.buscarPorAnimalId(animal_id);
-        } else {
-            alimentacoes = alimentServ.getAll();
+            msg = "Lista filtrada por tipo de comida";
         }
 
-        return ResponseEntity.ok( RespostaUtil.success(
-                alimentacoes,
-                "Lista de alimentações retornada com sucesso",
-                request.getRequestURI())
+        else if (animal_id != null) {
+            alimentacoes = alimentServ.buscarPorAnimalId(animal_id);
+            msg = "Lista filtrada por ID do animal";
+        }
+
+        if (alimentacoes.isEmpty()) {msg = "Lista vazia";}
+
+        return ResponseEntity.ok(
+                RespostaUtil.success(alimentacoes, msg, request.getRequestURI())
         );
     }
 
-    @Operation(
-            summary = "Atualiza um alimento"
-    )
+    @Operation(summary = "Atualiza um alimento")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(
             @Parameter(description = "Id do alimento a ser atualizado")
             @PathVariable Long id,
-            @Valid @RequestBody Alimentacao alimentacaoAtualizada,
+            @Valid @RequestBody AlimentacaoDto alimentacaoAtualizada,
             HttpServletRequest request
     ) {
         alimentServ.update(id, alimentacaoAtualizada);
         Alimentacao alimentacao = alimentServ.findById(id);
-        return ResponseEntity.ok(RespostaUtil.success(alimentacao, "Alimentação atualizada com sucesso", request.getRequestURI()));
+        return ResponseEntity.ok(
+                RespostaUtil.success(alimentacao, "Alimentação atualizada com sucesso", request.getRequestURI())
+        );
     }
 
-    @Operation(
-            summary = "Deleta um alimento"
-    )
+    @Operation(summary = "Deleta um alimento")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(
             @Parameter(description = "Id do alimento a ser deletado")
@@ -100,28 +103,8 @@ public class AlimentacaoController {
             HttpServletRequest request
     ) {
         alimentServ.deletar(id);
-        return ResponseEntity.ok(RespostaUtil.success(null, "Alimentação deletada com sucesso", request.getRequestURI()));
+        return ResponseEntity.ok(
+                RespostaUtil.success(null, "Alimentação deletada com sucesso", request.getRequestURI())
+        );
     }
-
-//    @Operation(summary = "Busca todos os alimentos por tipo de comida")
-//    @GetMapping("/tipoComida")
-//    public ResponseEntity<?> listarPorComida(
-//            @Parameter(description = "Tipo de comida a ser buscado")
-//            @RequestParam String tipoComida,
-//            HttpServletRequest request
-//    ) {
-//        List<Alimentacao> alimentacoes = alimentServ.buscarPorTipoComida(tipoComida);
-//        return ResponseEntity.ok(RespostaUtil.success(alimentacoes, "Lista de alimentações retornada com sucesso", request.getRequestURI()));
-//    }
-//
-//    @Operation(summary = "Busca todos os alimentos por animal")
-//    @GetMapping("/animal")
-//    public ResponseEntity<?> listarPorAnimalId(
-//            @Parameter(description = "Id do animal a ser buscado")
-//            @RequestParam Long animal_id,
-//            HttpServletRequest request
-//    ) {
-//        List<Alimentacao> alimentacoes = alimentServ.buscarPorAnimalId(animal_id);
-//        return ResponseEntity.ok(RespostaUtil.success(alimentacoes, "Lista de alimentações retornada com sucesso", request.getRequestURI()));
-//    }
 }

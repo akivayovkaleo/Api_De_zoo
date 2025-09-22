@@ -23,33 +23,19 @@ public class HabitatController {
         this.habitServ = habitServ;
     }
 
+    @Operation(summary = "Cria um novo habitat")
     @PostMapping
-    @Operation(
-            summary = "Cria um novo habitat"
-    )
-    @ApiResponse(
-            responseCode = "201",
-            description = "Habitat criado com sucesso"
-    )
-    public ResponseEntity<?> registerHabitat(
-            @Valid @RequestBody Habitat habit,
+    public ResponseEntity<?> create(
+            @Valid @RequestBody HabitatDto habit,
             HttpServletRequest request
     ) {
-        Habitat habitat = habitServ.save(habit);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                RespostaUtil.success(habitat, "Habitat criado com sucesso", request.getRequestURI())
-        );
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(RespostaUtil.success(habitServ.save(habit), "Habitat criado com sucesso", request.getRequestURI()));
     }
 
+    @Operation(summary = "Lista habitats (todos ou filtrados por tipo)")
     @GetMapping
-    @Operation(
-            summary = "Lista habitats (todos ou filtrados por tipo)"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Lista de habitats recuperada com sucesso"
-    )
-    public ResponseEntity<?> findAllHabitats(
+    public ResponseEntity<?> listar(
             @RequestParam(required = false) String tipo,
             HttpServletRequest request
     ) {
@@ -58,73 +44,39 @@ public class HabitatController {
                 : habitServ.findAll();
 
         return ResponseEntity.ok(
-                RespostaUtil.success(habitats, "Lista de habitats recuperada", request.getRequestURI())
-        );
+                RespostaUtil.success(habitats, "Lista de habitats retornada com sucesso", request.getRequestURI()));
     }
 
+    @Operation(summary = "Busca um habitat pelo ID")
     @GetMapping("/{id}")
-    @Operation(
-            summary = "Busca um habitat pelo ID"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Habitat encontrado com sucesso"
-    )
-    @ApiResponse(
-            responseCode = "404",
-            description = "Habitat não encontrado"
-    )
-    public ResponseEntity<?> findHabitatById(
+    public ResponseEntity<?> findById(
             @PathVariable Long id,
             HttpServletRequest request) {
         Habitat habitat = habitServ.findById(id);
         return ResponseEntity.ok(
-                RespostaUtil.success(habitat, "Habitat encontrado", request.getRequestURI())
-        );
+                RespostaUtil.success(habitat, "Habitat encontrado com sucesso", request.getRequestURI()));
     }
 
+    @Operation(summary = "Atualiza um habitat existente")
     @PutMapping("/{id}")
-    @Operation(
-            summary = "Atualiza um habitat existente"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Habitat atualizado com sucesso"
-    )
-    @ApiResponse(
-            responseCode = "404",
-            description = "Habitat não encontrado"
-    )
-    public ResponseEntity<?> alterHabitat(
+    public ResponseEntity<?> update(
             @PathVariable Long id,
             @Valid @RequestBody HabitatDto habitDto,
             HttpServletRequest request
     ) {
         Habitat habitat = habitServ.set(id, habitDto);
         return ResponseEntity.ok(
-                RespostaUtil.success(habitat, "Habitat atualizado com sucesso", request.getRequestURI())
-        );
+                RespostaUtil.success(habitat, "Habitat atualizado com sucesso", request.getRequestURI()));
     }
 
+    @Operation(summary = "Remove um habitat pelo ID")
     @DeleteMapping("/{id}")
-    @Operation(
-            summary = "Remove um habitat pelo ID"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Habitat removido com sucesso"
-    )
-    @ApiResponse(
-            responseCode = "404",
-            description = "Habitat não encontrado"
-    )
-    public ResponseEntity<?> deleteHabitat(
+    public ResponseEntity<?> delete(
             @PathVariable Long id,
             HttpServletRequest request
     ) {
         habitServ.delete(id);
         return ResponseEntity.ok(
-                RespostaUtil.success(null, "Habitat removido com sucesso", request.getRequestURI())
-        );
+                RespostaUtil.success(null, "Habitat removido com sucesso", request.getRequestURI()));
     }
 }

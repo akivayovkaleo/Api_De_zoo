@@ -2,8 +2,10 @@ package Api_de_zoologico.zoo.controllers;
 
 import Api_de_zoologico.zoo.models.ApiResponse;
 import Api_de_zoologico.zoo.utils.RespostaUtil;
+import com.fasterxml.jackson.core.JsonParseException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,11 +16,11 @@ import java.util.NoSuchElementException;
 @RestControllerAdvice
 public class GlobalExceptionController {
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiResponse<Object>> handleRuntimeException(RuntimeException ex, HttpServletRequest request) {
-        ApiResponse<Object> body = RespostaUtil.error("Ocorreu um erro inesperado", "Erro de Runtime", 1001, request.getRequestURI());
-        return ResponseEntity.status(500).body(body);
-    }
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<ApiResponse<Object>> handleRuntimeException(RuntimeException ex, HttpServletRequest request) {
+//        ApiResponse<Object> body = RespostaUtil.error("Ocorreu um erro inesperado", "Erro de Runtime", 1001, request.getRequestURI());
+//        return ResponseEntity.status(500).body(body);
+//    }
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ApiResponse<Object>> handleIllegalStateException(IllegalStateException ex, HttpServletRequest request) {
@@ -51,6 +53,24 @@ public class GlobalExceptionController {
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
                 .toList();
         ApiResponse<Object> body = RespostaUtil.error(errors, "Erro de validação", 400, request.getRequestURI());
+        return ResponseEntity.status(400).body(body);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Object>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex,HttpServletRequest request) {
+        String mensagem = "Verifique a sintaxe e os campos enviados Do JSON.";
+
+        if (ex.getCause() instanceof JsonParseException parseException) {
+            mensagem += " Detalhe: " + parseException.getOriginalMessage();
+        }
+
+        ApiResponse<Object> body = RespostaUtil.error(
+                mensagem,
+                "Erro de parse de JSON",
+                400,
+                request.getRequestURI()
+        );
+
         return ResponseEntity.status(400).body(body);
     }
 
