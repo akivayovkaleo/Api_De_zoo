@@ -23,7 +23,7 @@ public class FuncionarioService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public FuncionarioResponseDto criarFuncionario(FuncionarioRequestDto dto) {
+    public Funcionario criarFuncionario(FuncionarioRequestDto dto) {
         if (funcionarioRepository.existsByCpf(dto.getCpf())) {
             throw new RuntimeException("Já existe funcionário com esse CPF");
         }
@@ -42,17 +42,7 @@ public class FuncionarioService {
         funcionario.setTelefone(dto.getTelefone());
         funcionario.setDataContratacao(LocalDate.now());
         funcionario.setUser(user);
-        funcionarioRepository.save(funcionario);
 
-        FuncionarioResponseDto response = new FuncionarioResponseDto();
-        response.setId(funcionario.getId());
-        response.setNome(funcionario.getNome());
-        response.setCpf(funcionario.getCpf());
-        response.setCargo(funcionario.getCargo());
-        response.setTelefone(funcionario.getTelefone());
-        response.setDataContratacao(funcionario.getDataContratacao());
-        response.setUsername(user.getUsername());
-
-        return response;
+        return funcionarioRepository.save(funcionario);
     }
 }
