@@ -94,7 +94,9 @@ public class AnimalController {
 
     @Operation(summary = "Cria um novo animal")
     @PostMapping
-    public ResponseEntity<?> criar(@Valid @RequestBody AnimalDto animalDto, HttpServletRequest request) {
+    public ResponseEntity<?> criar(
+            @Valid @RequestBody AnimalDto animalDto,
+            HttpServletRequest request) {
         Animal animal = animalService.create(animalDto);
         return ResponseEntity.ok(
                 RespostaUtil.success(animal, "Animal criado com sucesso", request.getRequestURI())

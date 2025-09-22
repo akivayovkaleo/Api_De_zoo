@@ -29,7 +29,7 @@ public class AlimentacaoController {
     )
     @PostMapping
     public ResponseEntity<Alimentacao> create(@Valid @RequestBody Alimentacao alimentacao){
-        return ResponseEntity.ok(alimentServ.create(alimentacao));
+        return ResponseEntity.status(HttpStatus.CREATED).body(alimentServ.create(alimentacao));
     }
 
     @Operation(
@@ -42,7 +42,7 @@ public class AlimentacaoController {
             HttpServletRequest request
     ) {
         Alimentacao alimentacao = alimentServ.findById(id);
-        return ResponseEntity.ok(RespostaUtil.success(alimentacao, "Cliente retornado com sucesso", request.getRequestURI()));
+        return ResponseEntity.ok(RespostaUtil.success(alimentacao, "Alimentação retornada com sucesso", request.getRequestURI()));
     }
 
     @Operation(

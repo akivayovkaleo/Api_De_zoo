@@ -5,100 +5,126 @@ import Api_de_zoologico.zoo.models.Habitat;
 import Api_de_zoologico.zoo.services.HabitatService;
 import Api_de_zoologico.zoo.utils.RespostaUtil;
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.List;
 
 @RestController
 @RequestMapping("/habitats")
 public class HabitatController {
-    private HabitatService habitServ;
+    private final HabitatService habitServ;
 
     public HabitatController(HabitatService habitServ) {
         this.habitServ = habitServ;
     }
 
     @PostMapping
-    public ResponseEntity<?> registerHabitat(@RequestBody Habitat habit) {
-        try {
-            return ResponseEntity.ok(habitServ.save(habit));
-        } catch (RuntimeException e) {
-            return
-                    buildErrorResponse("Falha ao criar habitat",
-                            e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
-        }
+    @Operation(
+            summary = "Cria um novo habitat"
+    )
+    @ApiResponse(
+            responseCode = "201",
+            description = "Habitat criado com sucesso"
+    )
+    public ResponseEntity<?> registerHabitat(
+            @Valid @RequestBody Habitat habit,
+            HttpServletRequest request
+    ) {
+        Habitat habitat = habitServ.save(habit);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                RespostaUtil.success(habitat, "Habitat criado com sucesso", request.getRequestURI())
+        );
     }
 
     @GetMapping
-    public ResponseEntity<?> findAllHabitats() {
-        try {
-            return ResponseEntity.of(Optional.ofNullable(habitServ.findAll()));
-        } catch (RuntimeException e) {
-            return
-                    buildErrorResponse("Falha ao listar habitats",
-                            e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @GetMapping("/tipo")
-    public ResponseEntity<?> findHabitatByTipo(
-            @RequestParam String tipo
+    @Operation(
+            summary = "Lista habitats (todos ou filtrados por tipo)"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Lista de habitats recuperada com sucesso"
+    )
+    public ResponseEntity<?> findAllHabitats(
+            @RequestParam(required = false) String tipo,
+            HttpServletRequest request
     ) {
-        try {
-            return ResponseEntity.ok(habitServ.findByTipo(tipo));
-        } catch (RuntimeException e) {
-            return
-                    buildErrorResponse("Falha ao encontrar habitat do tipo " + tipo,
-                            e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        List<Habitat> habitats = (tipo != null && !tipo.isEmpty())
+                ? habitServ.findByTipo(tipo)
+                : habitServ.findAll();
+
+        return ResponseEntity.ok(
+                RespostaUtil.success(habitats, "Lista de habitats recuperada", request.getRequestURI())
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findHabitatById(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(habitServ.findById(id));
-        } catch (RuntimeException e) {
-            return buildErrorResponse("Falha ao encontrar habitat",
-                    e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+    @Operation(
+            summary = "Busca um habitat pelo ID"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Habitat encontrado com sucesso"
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Habitat não encontrado"
+    )
+    public ResponseEntity<?> findHabitatById(
+            @PathVariable Long id,
+            HttpServletRequest request) {
+        Habitat habitat = habitServ.findById(id);
+        return ResponseEntity.ok(
+                RespostaUtil.success(habitat, "Habitat encontrado", request.getRequestURI())
+        );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> alterHabitat(@PathVariable Long id, @RequestBody HabitatDto habitDto) {
-        try {
-            return ResponseEntity.ok(habitServ.set(id, habitDto));
-        } catch (RuntimeException e) {
-            return
-                    buildErrorResponse("Falha ao alterar habitat",
-                            e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
-        }
+    @Operation(
+            summary = "Atualiza um habitat existente"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Habitat atualizado com sucesso"
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Habitat não encontrado"
+    )
+    public ResponseEntity<?> alterHabitat(
+            @PathVariable Long id,
+            @Valid @RequestBody HabitatDto habitDto,
+            HttpServletRequest request
+    ) {
+        Habitat habitat = habitServ.set(id, habitDto);
+        return ResponseEntity.ok(
+                RespostaUtil.success(habitat, "Habitat atualizado com sucesso", request.getRequestURI())
+        );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteHabitat(@PathVariable Long id) {
-        try {
-            habitServ.delete(id);
-
-            return ResponseEntity.ok("Habitat removido");
-        } catch (RuntimeException e) {
-            return
-                    buildErrorResponse("Falha ao remover habitat",
-                            e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-    }
-
-    private ResponseEntity<Map<String, Object>> buildErrorResponse(String error, String message, HttpStatus status) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", status.value());
-        body.put("error", error);
-        body.put("message", message);
-
-        return ResponseEntity.status(status).body(body);
+    @Operation(
+            summary = "Remove um habitat pelo ID"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Habitat removido com sucesso"
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Habitat não encontrado"
+    )
+    public ResponseEntity<?> deleteHabitat(
+            @PathVariable Long id,
+            HttpServletRequest request
+    ) {
+        habitServ.delete(id);
+        return ResponseEntity.ok(
+                RespostaUtil.success(null, "Habitat removido com sucesso", request.getRequestURI())
+        );
     }
 }

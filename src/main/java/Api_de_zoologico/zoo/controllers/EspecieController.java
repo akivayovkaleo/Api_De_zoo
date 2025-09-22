@@ -3,20 +3,16 @@ package Api_de_zoologico.zoo.controllers;
 import Api_de_zoologico.zoo.dtos.EspecieDto;
 import Api_de_zoologico.zoo.models.Especie;
 import Api_de_zoologico.zoo.services.EspecieService;
+import Api_de_zoologico.zoo.utils.RespostaUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-
-// Listar por familia nao consegui
 
 @RestController
 @RequestMapping("/especies")
@@ -29,70 +25,113 @@ public class EspecieController {
     }
 
     @PostMapping
-    @Operation(summary = "Cria uma nova espécie")
-    @ApiResponse(responseCode = "200", description = "Espécie criada com sucesso")
-    public ResponseEntity<Especie> create(@Valid @RequestBody EspecieDto dto) {
-        return ResponseEntity.ok(especieService.criar(dto));
+    @Operation(
+            summary = "Cria uma nova espécie"
+    )
+    @ApiResponse(
+            responseCode = "201",
+            description = "Espécie criada com sucesso"
+    )
+    public ResponseEntity<?> create(
+            @Valid @RequestBody EspecieDto dto,
+            HttpServletRequest request) {
+        Especie especie = especieService.criar(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                RespostaUtil.success(especie, "Espécie criada com sucesso", request.getRequestURI())
+        );
     }
 
     @GetMapping
-    @Operation(summary = "Lista todas as espécies ou filtra por nome, família ou classe")
-    @ApiResponse(responseCode = "200", description = "Lista de espécies retornada com sucesso")
-    public ResponseEntity<List<Especie>> listar(
+    @Operation(
+            summary = "Lista todas as espécies ou filtra por nome, família ou classe"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Lista de espécies retornada com sucesso"
+    )
+    public ResponseEntity<?> listar(
             @RequestParam(required = false) String nome,
             @RequestParam(required = false) String familia,
-            @RequestParam(required = false) String classe
+            @RequestParam(required = false) String classe,
+            HttpServletRequest request
     ) {
-        if (nome != null) return ResponseEntity.ok(especieService.BuscarPorNome(nome));
-        if (familia != null) return ResponseEntity.ok(especieService.BuscarPorFamilia(familia));
-        if (classe != null) return ResponseEntity.ok(especieService.buscarPorClasse(classe));
-        return ResponseEntity.ok(especieService.listarTodos());
+        List<Especie> especies;
+
+        if (nome != null && !nome.isEmpty()) {
+            especies = especieService.BuscarPorNome(nome);
+        } else if (familia != null && !familia.isEmpty()) {
+            especies = especieService.BuscarPorFamilia(familia);
+        } else if (classe != null && !classe.isEmpty()) {
+            especies = especieService.buscarPorClasse(classe);
+        } else {
+            especies = especieService.listarTodos();
+        }
+
+        return ResponseEntity.ok(
+                RespostaUtil.success(especies, "Lista de espécies retornada com sucesso", request.getRequestURI())
+        );
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Busca uma espécie pelo ID")
-    @ApiResponse(responseCode = "200", description = "Espécie encontrada com sucesso")
-    @ApiResponse(responseCode = "404", description = "Espécie não encontrada")
-    public ResponseEntity<?> findById(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(especieService.BuscarPorId(id));
-        } catch (RuntimeException e) {
-            return buildErrorResponse("Espécie não encontrada", e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+    @Operation(
+            summary = "Busca uma espécie pelo ID"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Espécie encontrada com sucesso")
+    @ApiResponse(
+            responseCode = "404",
+            description = "Espécie não encontrada"
+    )
+    public ResponseEntity<?> findById(
+            @PathVariable Long id,
+            HttpServletRequest request) {
+        Especie especie = especieService.BuscarPorId(id);
+        return ResponseEntity.ok(
+                RespostaUtil.success(especie, "Espécie encontrada", request.getRequestURI())
+        );
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualiza uma espécie existente")
-    @ApiResponse(responseCode = "200", description = "Espécie atualizada com sucesso")
-    @ApiResponse(responseCode = "404", description = "Espécie não encontrada")
-    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody EspecieDto dto) {
-        try {
-            return ResponseEntity.ok(especieService.atualizar(id, dto));
-        } catch (RuntimeException e) {
-            return buildErrorResponse("Erro ao atualizar", e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+    @Operation(
+            summary = "Atualiza uma espécie existente"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Espécie atualizada com sucesso"
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Espécie não encontrada"
+    )
+    public ResponseEntity<?> update(
+            @PathVariable Long id,
+            @Valid @RequestBody EspecieDto dto,
+            HttpServletRequest request) {
+        Especie updated = especieService.atualizar(id, dto);
+        return ResponseEntity.ok(
+                RespostaUtil.success(updated, "Espécie atualizada com sucesso", request.getRequestURI())
+        );
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Remove uma espécie pelo ID")
-    @ApiResponse(responseCode = "204", description = "Espécie removida com sucesso")
-    @ApiResponse(responseCode = "404", description = "Espécie não encontrada")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        try {
-            especieService.deletar(id);
-            return ResponseEntity.ok("Espécie Removida");
-        } catch (RuntimeException e) {
-            return buildErrorResponse("Erro ao deletar", e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-    }
-
-    private ResponseEntity<Map<String, Object>> buildErrorResponse(String error, String message, HttpStatus status) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", status.value());
-        body.put("error", error);
-        body.put("message", message);
-
-        return ResponseEntity.status(status).body(body);
+    @Operation(
+            summary = "Remove uma espécie pelo ID"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Espécie removida com sucesso"
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Espécie não encontrada"
+    )
+    public ResponseEntity<?> delete(
+            @PathVariable Long id,
+            HttpServletRequest request) {
+        especieService.deletar(id);
+        return ResponseEntity.ok(
+                RespostaUtil.success(null, "Espécie removida com sucesso", request.getRequestURI())
+        );
     }
 }

@@ -20,6 +20,17 @@ public class GlobalExceptionController {
         return ResponseEntity.status(500).body(body);
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiResponse<Object>> handleIllegalStateException(IllegalStateException ex, HttpServletRequest request) {
+        ApiResponse<Object> body = RespostaUtil.error(
+                ex.getMessage(),
+                "Conflito no estado do recurso",
+                409,
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(409).body(body);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Object>> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
         ApiResponse<Object> body = RespostaUtil.error(ex.getMessage(), "Requisição inválida", 400, request.getRequestURI());

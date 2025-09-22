@@ -61,7 +61,7 @@ public class AnimalService {
 
         int quantidadeAtual = habitat.getAnimais().size();
         if (quantidadeAtual >= habitat.getCapacidadeAnimal()) {
-            throw new RuntimeException("Capacidade do habitat atingida.");
+            throw new IllegalStateException("Capacidade do habitat atingida.");
         }
 
         animal.setNome(animalDto.nome());
@@ -89,7 +89,7 @@ public class AnimalService {
 
         int quantidadeAtual = habitat.getAnimais().size();
         if (quantidadeAtual >= habitat.getCapacidadeAnimal()) {
-            throw new RuntimeException("Capacidade do habitat atingida.");
+            throw new IllegalStateException("Capacidade do habitat atingida.");
         }
 
         animal.setNome(animalDto.nome());
