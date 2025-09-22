@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class FuncionarioService {
@@ -30,8 +32,8 @@ public class FuncionarioService {
         User user = new User();
         user.setUsername(dto.getUsername());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.getRoles().add(roleRepository.findByName("ROLE_FUNCIONARIO")
-                .orElseThrow(() -> new RuntimeException("Role não encontrada")));
+        user.setRole(roleRepository.findByName("ROLE_FUNCIONARIO")
+                .orElseThrow(() -> new RuntimeException("Role ROLE_FUNCIONARIO não encontrada")));
         userRepository.save(user);
 
         // Criar Funcionario
@@ -39,19 +41,19 @@ public class FuncionarioService {
         funcionario.setNome(dto.getNome());
         funcionario.setCpf(dto.getCpf());
         funcionario.setCargo(dto.getCargo());
-        funcionario.setSetor(dto.getSetor());
-        funcionario.setSalario(dto.getSalario());
+        funcionario.setTelefone(dto.getTelefone());
+        funcionario.setDataContratacao(LocalDate.now());
         funcionario.setUser(user);
         funcionarioRepository.save(funcionario);
 
-        // Converter para DTO de resposta
+        // Response
         FuncionarioResponseDto response = new FuncionarioResponseDto();
         response.setId(funcionario.getId());
         response.setNome(funcionario.getNome());
         response.setCpf(funcionario.getCpf());
         response.setCargo(funcionario.getCargo());
-        response.setSetor(funcionario.getSetor());
-        response.setSalario(funcionario.getSalario());
+        response.setTelefone(funcionario.getTelefone());
+        response.setDataContratacao(funcionario.getDataContratacao());
         response.setUsername(user.getUsername());
 
         return response;

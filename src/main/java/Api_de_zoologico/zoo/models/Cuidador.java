@@ -31,4 +31,5 @@ public class Cuidador {
     @JsonIgnore
     @OneToMany(mappedBy = "cuidador", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Animal> animais;
+
 }

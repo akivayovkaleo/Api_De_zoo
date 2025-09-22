@@ -3,6 +3,8 @@ package Api_de_zoologico.zoo.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "funcionarios")
 @Getter
@@ -21,9 +23,12 @@ public class Funcionario {
     @Column(unique = true, length = 11)
     private String cpf;
 
+    private String telefone;
+    private LocalDate dataContratacao;
     private String cargo;
     private String setor;
     private Double salario;
+
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")

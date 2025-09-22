@@ -1,5 +1,6 @@
 package Api_de_zoologico.zoo.security;
 
+import Api_de_zoologico.zoo.models.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
@@ -11,17 +12,19 @@ import java.util.Date;
 public class JwtUtil {
 
     private final String SECRET = "minhaChaveSuperSecretaDeSegurancaQueDeveSerGrande";
-    private final long EXPIRATION = 1000 * 60 * 60; // 1h
+    private final long EXPIRATION = 1000 * 60 * 60;
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String username) { // colocar todo o usuario aqui como parametro
         return Jwts.builder()
                 .setSubject(username)
+                .setIssuer("Back-End \" Api_de_zoo\" Top")
+                .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256) // algoritmo de criptografia da chave
                 .compact();
     }
 

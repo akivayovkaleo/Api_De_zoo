@@ -28,13 +28,15 @@ public class VisitanteService {
             throw new RuntimeException("Já existe visitante com esse CPF");
         }
 
+        // Criar User
         User user = new User();
         user.setUsername(dto.getUsername());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.getRoles().add(roleRepository.findByName("ROLE_VISITANTE")
-                .orElseThrow(() -> new RuntimeException("Role não encontrada")));
+        user.setRole(roleRepository.findByName("ROLE_VISITANTE")
+                .orElseThrow(() -> new RuntimeException("Role ROLE_VISITANTE não encontrada")));
         userRepository.save(user);
 
+        // Criar Visitante
         Visitante visitante = new Visitante();
         visitante.setNome(dto.getNome());
         visitante.setCpf(dto.getCpf());
@@ -44,6 +46,7 @@ public class VisitanteService {
         visitante.setUser(user);
         visitanteRepository.save(visitante);
 
+        // Response
         VisitanteResponseDto response = new VisitanteResponseDto();
         response.setId(visitante.getId());
         response.setNome(visitante.getNome());
