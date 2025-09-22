@@ -77,6 +77,7 @@
 | -------- | ------------------------------------------------------- |--------------------------------|
 | `GET`    | `/alimentacoes`                                             | Lista todos alimentações       |
 | `GET`    | `/alimentacoes/{id}`                                        | Busca alimentação por ID       |
+| `GET`    | `/alimentacoes??animal_id=5`                                        | Busca alimentações de um animal     |
 | `POST`   | `/alimentacoes`                                             | Cria nova alimentação          |
 | `PUT`    | `/alimentacoes/{id}`                                        | Atualiza alimentação existente |
 | `DELETE` | `/alimentacoes/{id}`                                        | Remove alimentação             |
