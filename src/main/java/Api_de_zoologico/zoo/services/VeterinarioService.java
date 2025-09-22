@@ -1,8 +1,10 @@
 package Api_de_zoologico.zoo.services;
 
 import Api_de_zoologico.zoo.dtos.VeterinarioDto;
+import Api_de_zoologico.zoo.models.Funcionario;
 import Api_de_zoologico.zoo.models.Veterinario;
 import Api_de_zoologico.zoo.repositories.VeterinarioRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,19 +12,14 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class VeterinarioService {
-    private final VeterinarioRepository veterinarioRepository;
 
-    public VeterinarioService(VeterinarioRepository veterinarioRepository) {
-        this.veterinarioRepository = veterinarioRepository;
-    }
+    private final VeterinarioRepository veterinarioRepository;
+    private final FuncionarioService funcionarioService;
 
     public List<Veterinario> findAll() {
-        try {
-            return veterinarioRepository.findAll();
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar todos os veterinários: " + e.getMessage());
-        }
+        return veterinarioRepository.findAll();
     }
 
     public Veterinario findById(Long id) {
@@ -31,92 +28,57 @@ public class VeterinarioService {
     }
 
     public List<Veterinario> findByEspecialidade(String especialidade) {
-        if (especialidade == null || especialidade.trim().isEmpty()) {
-            throw new RuntimeException("Especialidade não pode ser vazia ou nula");
-        }
-        try {
-            return veterinarioRepository.findByEspecialidadeContainingIgnoreCase(especialidade.trim());
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar veterinários pela especialidade '" + especialidade + "': " + e.getMessage());
-        }
+        return veterinarioRepository.findByEspecialidadeContainingIgnoreCase(especialidade.trim());
     }
 
     public List<Veterinario> findByNome(String nome) {
-        if (nome == null || nome.trim().isEmpty()) {
-            throw new RuntimeException("Nome não pode ser vazio ou nulo");
-        }
-        try {
-            return veterinarioRepository.findByNomeContainingIgnoreCase(nome.trim());
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar veterinários pelo nome '" + nome + "': " + e.getMessage());
-        }
+        return veterinarioRepository.findByNomeContainingIgnoreCase(nome.trim());
     }
 
-    public Veterinario create(VeterinarioDto veterinarioDto) {
-        try {
-            if (veterinarioDto.nome() == null || veterinarioDto.nome().trim().isEmpty()) {
-                throw new RuntimeException("Nome do veterinário é obrigatório");
-            }
-
-            if (veterinarioDto.crmv() == null || veterinarioDto.crmv().trim().isEmpty()) {
-                throw new RuntimeException("CRMV do veterinário é obrigatório");
-            }
-
-            if (veterinarioRepository.findByCrmv(veterinarioDto.crmv().trim()).isPresent()) {
-                throw new RuntimeException("Já existe um veterinário cadastrado com o CRMV '" + veterinarioDto.crmv().trim() + "'");
-            }
-
-            Veterinario veterinario = new Veterinario();
-            veterinario.setNome(veterinarioDto.nome().trim());
-            veterinario.setCrmv(veterinarioDto.crmv().trim().toUpperCase());
-            veterinario.setEspecialidade(veterinarioDto.especialidade() != null ? veterinarioDto.especialidade().trim() : null);
-
-            return veterinarioRepository.save(veterinario);
-
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Erro inesperado ao criar veterinário: " + e.getMessage());
+    public Veterinario create(VeterinarioDto dto) {
+        if (dto.nome() == null || dto.nome().isBlank()) {
+            throw new RuntimeException("Nome do veterinário é obrigatório");
         }
+        if (dto.crmv() == null || dto.crmv().isBlank()) {
+            throw new RuntimeException("CRMV é obrigatório");
+        }
+
+        if (veterinarioRepository.findByCrmv(dto.crmv().trim().toUpperCase()).isPresent()) {
+            throw new RuntimeException("Já existe veterinário com CRMV '" + dto.crmv() + "'");
+        }
+
+        // Cria funcionário associado
+        Funcionario funcionario = funcionarioService.criarFuncionario(dto.funcionario());
+
+        Veterinario veterinario = new Veterinario();
+        veterinario.setNome(dto.nome().trim());
+        veterinario.setCrmv(dto.crmv().trim().toUpperCase());
+        veterinario.setEspecialidade(dto.especialidade());
+        veterinario.setFuncionario(funcionario);
+
+        return veterinarioRepository.save(veterinario);
     }
 
-    public Veterinario update(Long id, VeterinarioDto veterinarioDto) {
-        try {
-            Veterinario veterinarioExistente = findById(id);
+    public Veterinario update(Long id, VeterinarioDto dto) {
+        Veterinario existente = findById(id);
 
-            if (veterinarioDto.nome() == null || veterinarioDto.nome().trim().isEmpty()) {
-                throw new RuntimeException("Nome do veterinário é obrigatório");
-            }
-
-            if (veterinarioDto.crmv() == null || veterinarioDto.crmv().trim().isEmpty()) {
-                throw new RuntimeException("CRMV do veterinário é obrigatório");
-            }
-
-            if (!veterinarioExistente.getCrmv().equals(veterinarioDto.crmv().trim().toUpperCase()) &&
-                    veterinarioRepository.existsByCrmvAndIdNot(veterinarioDto.crmv().trim().toUpperCase(), id)) {
-                throw new RuntimeException("Já existe um veterinário cadastrado com o CRMV '" + veterinarioDto.crmv().trim() + "'");
-            }
-
-            veterinarioExistente.setNome(veterinarioDto.nome().trim());
-            veterinarioExistente.setCrmv(veterinarioDto.crmv().trim().toUpperCase());
-            veterinarioExistente.setEspecialidade(veterinarioDto.especialidade() != null ? veterinarioDto.especialidade().trim() : null);
-
-            return veterinarioRepository.save(veterinarioExistente);
-
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Erro inesperado ao atualizar veterinário com ID " + id + ": " + e.getMessage());
+        if (!existente.getCrmv().equals(dto.crmv().trim().toUpperCase())
+                && veterinarioRepository.existsByCrmvAndIdNot(dto.crmv().trim().toUpperCase(), id)) {
+            throw new RuntimeException("Já existe veterinário com CRMV '" + dto.crmv() + "'");
         }
+
+        existente.setNome(dto.nome().trim());
+        existente.setCrmv(dto.crmv().trim().toUpperCase());
+        existente.setEspecialidade(dto.especialidade());
+
+        // Opcional: atualizar funcionario também
+        // funcionarioService.updateFuncionario(existente.getFuncionario().getId(), dto.funcionario());
+
+        return veterinarioRepository.save(existente);
     }
 
     public void delete(Long id) {
-        try {
-            veterinarioRepository.deleteById(id);
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Erro inesperado ao remover veterinário com ID " + id + ": " + e.getMessage());
-        }
+        Veterinario veterinario = findById(id);
+        veterinarioRepository.delete(veterinario);
     }
 }

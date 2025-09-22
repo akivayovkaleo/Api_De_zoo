@@ -12,6 +12,7 @@ public record CuidadorDto(
         String especialidade,
 
         @Size(max = 20, message = "O turno deve ter no máximo 20 caracteres")
-        String turno
-) {
-}
+        String turno,
+
+        FuncionarioRequestDto funcionario // <---- vínculo com Funcionario
+) {}

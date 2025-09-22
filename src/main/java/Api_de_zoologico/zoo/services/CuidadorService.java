@@ -2,7 +2,9 @@ package Api_de_zoologico.zoo.services;
 
 import Api_de_zoologico.zoo.dtos.CuidadorDto;
 import Api_de_zoologico.zoo.models.Cuidador;
+import Api_de_zoologico.zoo.models.Funcionario;
 import Api_de_zoologico.zoo.repositories.CuidadorRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,19 +12,14 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class CuidadorService {
-    private final CuidadorRepository cuidadorRepository;
 
-    public CuidadorService(CuidadorRepository cuidadorRepository) {
-        this.cuidadorRepository = cuidadorRepository;
-    }
+    private final CuidadorRepository cuidadorRepository;
+    private final FuncionarioService funcionarioService;
 
     public List<Cuidador> findAll() {
-        try {
-            return cuidadorRepository.findAll();
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar todos os cuidadores: " + e.getMessage());
-        }
+        return cuidadorRepository.findAll();
     }
 
     public Cuidador findById(Long id) {
@@ -31,110 +28,54 @@ public class CuidadorService {
     }
 
     public List<Cuidador> findByEspecialidade(String especialidade) {
-        if (especialidade == null || especialidade.trim().isEmpty()) {
-            throw new RuntimeException("Especialidade não pode ser vazia ou nula");
-        }
-        try {
-            return cuidadorRepository.findByEspecialidadeContainingIgnoreCase(especialidade.trim());
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar cuidadores pela especialidade '" + especialidade + "': " + e.getMessage());
-        }
+        return cuidadorRepository.findByEspecialidadeContainingIgnoreCase(especialidade.trim());
     }
 
     public List<Cuidador> findByTurno(String turno) {
-        if (turno == null || turno.trim().isEmpty()) {
-            throw new RuntimeException("Turno não pode ser vazio ou nulo");
-        }
-        try {
-            return cuidadorRepository.findByTurnoContainingIgnoreCase(turno.trim());
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar cuidadores pelo turno '" + turno + "': " + e.getMessage());
-        }
+        return cuidadorRepository.findByTurnoContainingIgnoreCase(turno.trim());
     }
 
     public List<Cuidador> findByNome(String nome) {
-        if (nome == null || nome.trim().isEmpty()) {
-            throw new RuntimeException("Nome não pode ser vazio ou nulo");
-        }
-        try {
-            return cuidadorRepository.findByNomeContainingIgnoreCase(nome.trim());
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar cuidadores pelo nome '" + nome + "': " + e.getMessage());
-        }
+        return cuidadorRepository.findByNomeContainingIgnoreCase(nome.trim());
     }
 
-    public Cuidador create(CuidadorDto cuidadorDto) {
-        try {
-            if (cuidadorDto.nome() == null || cuidadorDto.nome().trim().isEmpty()) {
-                throw new RuntimeException("Nome do cuidador é obrigatório");
-            }
-
-
-            List<Cuidador> cuidadoresExistentes = cuidadorRepository.findByNomeContainingIgnoreCase(cuidadorDto.nome().trim());
-            if (!cuidadoresExistentes.isEmpty()) {
-                throw new RuntimeException("Já existe um cuidador com o nome '" + cuidadorDto.nome().trim() + "'");
-            }
-
-            Cuidador cuidador = new Cuidador();
-            cuidador.setNome(cuidadorDto.nome().trim());
-            cuidador.setEspecialidade(cuidadorDto.especialidade() != null ? cuidadorDto.especialidade().trim() : null);
-            cuidador.setTurno(cuidadorDto.turno() != null ? cuidadorDto.turno().trim() : null);
-
-            return cuidadorRepository.save(cuidador);
-
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Erro inesperado ao criar cuidador: " + e.getMessage());
+    public Cuidador create(CuidadorDto dto) {
+        if (dto.nome() == null || dto.nome().isBlank()) {
+            throw new RuntimeException("Nome do cuidador é obrigatório");
         }
+
+        // Cria o funcionário associado
+        Funcionario funcionario = funcionarioService.criarFuncionario(dto.funcionario());
+
+        Cuidador cuidador = new Cuidador();
+        cuidador.setNome(dto.nome().trim());
+        cuidador.setEspecialidade(dto.especialidade());
+        cuidador.setTurno(dto.turno());
+        cuidador.setFuncionario(funcionario);
+
+        return cuidadorRepository.save(cuidador);
     }
 
-    public Cuidador update(Long id, CuidadorDto cuidadorDto) {
-        try {
-            Cuidador cuidadorExistente = findById(id);
+    public Cuidador update(Long id, CuidadorDto dto) {
+        Cuidador existente = findById(id);
 
-            if (cuidadorDto.nome() == null || cuidadorDto.nome().trim().isEmpty()) {
-                throw new RuntimeException("Nome do cuidador é obrigatório");
-            }
+        existente.setNome(dto.nome().trim());
+        existente.setEspecialidade(dto.especialidade());
+        existente.setTurno(dto.turno());
 
+        // Opcional: atualizar o funcionário também
+        // funcionarioService.updateFuncionario(existente.getFuncionario().getId(), dto.funcionario());
 
-            if (!cuidadorExistente.getNome().equals(cuidadorDto.nome().trim()) &&
-                cuidadorRepository.existsByNomeAndIdNot(cuidadorDto.nome().trim(), id)) {
-                throw new RuntimeException("Já existe um cuidador com o nome '" + cuidadorDto.nome().trim() + "'");
-            }
-
-            // Atualiza dados
-            cuidadorExistente.setNome(cuidadorDto.nome().trim());
-            cuidadorExistente.setEspecialidade(cuidadorDto.especialidade() != null ? cuidadorDto.especialidade().trim() : null);
-            cuidadorExistente.setTurno(cuidadorDto.turno() != null ? cuidadorDto.turno().trim() : null);
-
-            return cuidadorRepository.save(cuidadorExistente);
-
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Erro inesperado ao atualizar cuidador com ID " + id + ": " + e.getMessage());
-        }
+        return cuidadorRepository.save(existente);
     }
 
     public void delete(Long id) {
-        try {
-            Cuidador cuidador = findById(id);
+        Cuidador cuidador = findById(id);
 
-
-            if (cuidador.getAnimais() != null && !cuidador.getAnimais().isEmpty()) {
-                throw new RuntimeException(
-                        "Não é possível remover o cuidador '" + cuidador.getNome() +
-                                "' pois ele está responsável por " + cuidador.getAnimais().size() + " animais. " +
-                                "Atribua novos cuidadores aos animais antes de remover."
-                );
-            }
-
-            cuidadorRepository.deleteById(id);
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Erro inesperado ao remover cuidador com ID " + id + ": " + e.getMessage());
+        if (cuidador.getAnimais() != null && !cuidador.getAnimais().isEmpty()) {
+            throw new RuntimeException("Não é possível remover o cuidador, pois está responsável por animais.");
         }
+
+        cuidadorRepository.delete(cuidador);
     }
 }

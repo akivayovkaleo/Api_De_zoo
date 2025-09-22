@@ -28,7 +28,6 @@ public class FuncionarioService {
             throw new RuntimeException("Já existe funcionário com esse CPF");
         }
 
-        // Criar User
         User user = new User();
         user.setUsername(dto.getUsername());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -36,7 +35,6 @@ public class FuncionarioService {
                 .orElseThrow(() -> new RuntimeException("Role ROLE_FUNCIONARIO não encontrada")));
         userRepository.save(user);
 
-        // Criar Funcionario
         Funcionario funcionario = new Funcionario();
         funcionario.setNome(dto.getNome());
         funcionario.setCpf(dto.getCpf());
@@ -46,7 +44,6 @@ public class FuncionarioService {
         funcionario.setUser(user);
         funcionarioRepository.save(funcionario);
 
-        // Response
         FuncionarioResponseDto response = new FuncionarioResponseDto();
         response.setId(funcionario.getId());
         response.setNome(funcionario.getNome());

@@ -2,22 +2,17 @@ package Api_de_zoologico.zoo.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Table(name = "veterinarios")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "veterinarios")
-public class Veterinario {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, length = 100)
-    private String nome;
+public class Veterinario extends Funcionario {
 
     @Column(unique = true, length = 20)
     private String crmv;
@@ -25,8 +20,7 @@ public class Veterinario {
     @Column(length = 50)
     private String especialidade;
 
-    // Relacionamento com Funcionario
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "funcionario_id", referencedColumnName = "id")
     private Funcionario funcionario;
 }

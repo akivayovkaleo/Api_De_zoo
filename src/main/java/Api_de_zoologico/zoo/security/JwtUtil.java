@@ -64,4 +64,10 @@ public class JwtUtil {
             return true;
         }
     }
+
+    public boolean validateToken(String token, String username) {
+        final String tokenUsername = extractUsername(token);
+        return (tokenUsername.equals(username) && !isTokenExpired(token));
+    }
+
 }

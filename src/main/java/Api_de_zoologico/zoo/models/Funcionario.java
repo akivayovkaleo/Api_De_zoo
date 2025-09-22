@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Inheritance(strategy = InheritanceType.JOINED) // cada subclasse terá tabela própria
 public class Funcionario {
 
     @Id
@@ -28,7 +29,6 @@ public class Funcionario {
     private String cargo;
     private String setor;
     private Double salario;
-
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")

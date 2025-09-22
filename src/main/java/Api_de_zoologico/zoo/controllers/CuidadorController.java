@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/cuidadores")
 @CrossOrigin(origins = "*")
 public class CuidadorController {
+
     private final CuidadorService cuidadorService;
 
     public CuidadorController(CuidadorService cuidadorService) {
@@ -35,16 +36,10 @@ public class CuidadorController {
                 return ResponseEntity.ok(cuidadorService.findByNome(nome));
             }
             return ResponseEntity.ok(cuidadorService.findAll());
-        } catch (RuntimeException e) {
-            return RespostaUtil.buildErrorResponse(
-                    "Erro ao filtrar cuidadores",
-                    e.getMessage(),
-                    HttpStatus.BAD_REQUEST
-            );
         } catch (Exception e) {
             return RespostaUtil.buildErrorResponse(
                     "Erro ao buscar cuidadores",
-                    "Ocorreu um erro inesperado ao buscar cuidadores: " + e.getMessage(),
+                    e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
@@ -52,94 +47,27 @@ public class CuidadorController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
-        try {
-            Cuidador cuidador = cuidadorService.findById(id);
-            return ResponseEntity.ok(cuidador);
-        } catch (RuntimeException e) {
-            return RespostaUtil.buildErrorResponse(
-                    "Cuidador não encontrado",
-                    "Não foi possível encontrar o cuidador com ID: " + id + ". " + e.getMessage(),
-                    HttpStatus.NOT_FOUND
-            );
-        } catch (Exception e) {
-            return RespostaUtil.buildErrorResponse(
-                    "Erro ao buscar cuidador",
-                    "Ocorreu um erro inesperado ao buscar o cuidador: " + e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
+        return ResponseEntity.ok(cuidadorService.findById(id));
     }
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody CuidadorDto cuidadorDto) {
-        try {
-            Cuidador cuidadorCriado = cuidadorService.create(cuidadorDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(cuidadorCriado);
-        } catch (RuntimeException e) {
-            return RespostaUtil.buildErrorResponse(
-                    "Erro ao criar cuidador",
-                    "Não foi possível criar o cuidador. " + e.getMessage(),
-                    HttpStatus.BAD_REQUEST
-            );
-        } catch (Exception e) {
-            return RespostaUtil.buildErrorResponse(
-                    "Erro interno do servidor",
-                    "Ocorreu um erro inesperado ao criar o cuidador: " + e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
+        Cuidador cuidadorCriado = cuidadorService.create(cuidadorDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cuidadorCriado);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @Valid @RequestBody CuidadorDto cuidadorDto) {
-        try {
-            Cuidador cuidadorAtualizado = cuidadorService.update(id, cuidadorDto);
-            return ResponseEntity.ok(cuidadorAtualizado);
-        } catch (RuntimeException e) {
-            return RespostaUtil.buildErrorResponse(
-                    "Erro ao atualizar cuidador",
-                    "Não foi possível atualizar o cuidador com ID: " + id + ". " + e.getMessage(),
-                    HttpStatus.BAD_REQUEST
-            );
-        } catch (Exception e) {
-            return RespostaUtil.buildErrorResponse(
-                    "Erro interno do servidor",
-                    "Ocorreu um erro inesperado ao atualizar o cuidador: " + e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
+        Cuidador cuidadorAtualizado = cuidadorService.update(id, cuidadorDto);
+        return ResponseEntity.ok(cuidadorAtualizado);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        try {
-            cuidadorService.delete(id);
-            return ResponseEntity.ok().body(new MensagemResponse("Cuidador removido com sucesso"));
-        } catch (RuntimeException e) {
-            return RespostaUtil.buildErrorResponse(
-                    "Erro ao remover cuidador",
-                    "Não foi possível remover o cuidador com ID: " + id + ". " + e.getMessage(),
-                    HttpStatus.BAD_REQUEST
-            );
-        } catch (Exception e) {
-            return RespostaUtil.buildErrorResponse(
-                    "Erro interno do servidor",
-                    "Ocorreu um erro inesperado ao remover o cuidador: " + e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
+        cuidadorService.delete(id);
+        return ResponseEntity.ok(new MensagemResponse("Cuidador removido com sucesso"));
     }
 
-    public static class MensagemResponse {
-        private String mensagem;
-
-        public MensagemResponse(String mensagem) {
-            this.mensagem = mensagem;
-        }
-
-        public String getMensagem() {
-            return mensagem;
-        }
-    }
+    public record MensagemResponse(String mensagem) {}
 }

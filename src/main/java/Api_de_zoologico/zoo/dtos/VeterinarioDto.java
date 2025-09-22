@@ -1,7 +1,6 @@
 package Api_de_zoologico.zoo.dtos;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record VeterinarioDto(
@@ -14,6 +13,7 @@ public record VeterinarioDto(
         String crmv,
 
         @Size(max = 50, message = "A especialidade deve ter no máximo 50 caracteres")
-        String especialidade
-) {
-}
+        String especialidade,
+
+        FuncionarioRequestDto funcionario // <---- vínculo com Funcionario
+) {}
