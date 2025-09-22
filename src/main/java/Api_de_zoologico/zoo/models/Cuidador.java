@@ -32,4 +32,8 @@ public class Cuidador {
     @OneToMany(mappedBy = "cuidador", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Animal> animais;
 
+    // Relacionamento com Funcionario
+    @OneToOne
+    @JoinColumn(name = "funcionario_id", referencedColumnName = "id")
+    private Funcionario funcionario;
 }

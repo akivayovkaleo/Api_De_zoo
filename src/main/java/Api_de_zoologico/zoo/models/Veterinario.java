@@ -24,4 +24,9 @@ public class Veterinario {
 
     @Column(length = 50)
     private String especialidade;
+
+    // Relacionamento com Funcionario
+    @OneToOne
+    @JoinColumn(name = "funcionario_id", referencedColumnName = "id")
+    private Funcionario funcionario;
 }
