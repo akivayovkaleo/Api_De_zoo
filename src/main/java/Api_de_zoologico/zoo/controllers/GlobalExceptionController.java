@@ -6,9 +6,11 @@ import com.fasterxml.jackson.core.JsonParseException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -72,6 +74,39 @@ public class GlobalExceptionController {
         );
 
         return ResponseEntity.status(400).body(body);
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpServletRequest request) {
+        ApiResponse<Object> body = RespostaUtil.error(
+                "Página não encontrada",
+                "O servidor não conseguiu encontrar a página solicitada",
+                404,
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(404).body(body);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
+        ApiResponse<Object> body = RespostaUtil.error(
+                "Método HTTP não permitido",
+                "Certifique-se de que está a utilizar o método HTTP correto para o recurso que está a tentar aceder ou enviar dados",
+                405,
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(405).body(body);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Object>> handleGenericException(Exception ex, HttpServletRequest request) {
+        ApiResponse<Object> body = RespostaUtil.error(
+                ex.getMessage(),
+                "Erro inesperado",
+                500,
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(500).body(body);
     }
 
 }

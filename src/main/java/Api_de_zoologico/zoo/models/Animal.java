@@ -38,4 +38,16 @@ public class Animal {
     @ManyToOne
     @JoinColumn(name = "especie_id")
     private Especie especie;
+
+    @Override
+    public String toString() {
+        return "Animal{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", idade=" + idade +
+                ", habitatId=" + (habitat != null ? habitat.getId() : null) +
+                ", cuidadorId=" + (cuidador != null ? cuidador.getId() : null) +
+                ", especieId=" + (especie != null ? especie.getId() : null) +
+                '}';
+    }
 }

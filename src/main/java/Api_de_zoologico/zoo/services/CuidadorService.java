@@ -18,6 +18,9 @@ public class CuidadorService {
     }
 
     public Cuidador create(CuidadorDto cuidadorDto) {
+        if (cuidadorRepository.findByEmail(cuidadorDto.email()).isPresent()) {
+            throw new IllegalArgumentException("O email informado já está em uso");
+        }
         Cuidador cuidador = new Cuidador();
         cuidador.setNome(cuidadorDto.nome());
         cuidador.setTurno(cuidadorDto.turno());
@@ -44,6 +47,9 @@ public class CuidadorService {
     }
 
     public Cuidador update(Long id,  CuidadorDto cuidadorDto) {
+        if (cuidadorRepository.findByEmail(cuidadorDto.email()).isPresent()) {
+            throw new IllegalArgumentException("O email informado já está em uso");
+        }
         Cuidador cuidador = findById(id);
         cuidador.setNome(cuidadorDto.nome());
         cuidador.setTurno(cuidadorDto.turno());

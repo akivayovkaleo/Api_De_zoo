@@ -103,7 +103,7 @@ public class AnimalService {
 
         emailService.sendEmail(animal.getCuidador().getEmail(),
                 "Animal atualizado",
-                "O animal " + animal.getNome() + " foi atualizado.");
+                "O animal " + animal.getNome() + " foi atualizado.\n" + animal.toString());
 
         return animal;
     }
@@ -112,4 +112,5 @@ public class AnimalService {
         Animal animal = findById(id);
         animalRepository.delete(animal);
     }
+
 }
