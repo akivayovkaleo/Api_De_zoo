@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ public class EventoController {
         this.eventoService = eventoService;
     }
 
+    @PreAuthorize("hasRole('GERENTE_EVENTOS') or hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> findAll(
             @RequestParam(required = false) String nome,
@@ -59,6 +61,7 @@ public class EventoController {
         }
     }
 
+    @PreAuthorize("hasRole('GERENTE_EVENTOS') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
@@ -79,6 +82,7 @@ public class EventoController {
         }
     }
 
+    @PreAuthorize("hasRole('GERENTE_EVENTOS') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody EventoDto eventoDto) {
         try {
@@ -99,6 +103,7 @@ public class EventoController {
         }
     }
 
+    @PreAuthorize("hasRole('GERENTE_EVENTOS') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @Valid @RequestBody EventoDto eventoDto) {
@@ -120,6 +125,7 @@ public class EventoController {
         }
     }
 
+    @PreAuthorize("hasRole('GERENTE_EVENTOS') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
@@ -141,6 +147,7 @@ public class EventoController {
     }
 
     // Endpoints para gerenciamento de inscrições
+    @PreAuthorize("hasRole('GERENTE_EVENTOS') or hasRole('ADMIN')")
     @PostMapping("/{eventoId}/visitantes/{visitanteId}")
     public ResponseEntity<?> adicionarVisitante(@PathVariable Long eventoId, @PathVariable Long visitanteId) {
         try {
@@ -161,6 +168,7 @@ public class EventoController {
         }
     }
 
+    @PreAuthorize("hasRole('GERENTE_EVENTOS') or hasRole('ADMIN')")
     @DeleteMapping("/{eventoId}/visitantes/{visitanteId}")
     public ResponseEntity<?> removerVisitante(@PathVariable Long eventoId, @PathVariable Long visitanteId) {
         try {

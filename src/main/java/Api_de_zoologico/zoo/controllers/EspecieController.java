@@ -7,6 +7,7 @@ import Api_de_zoologico.zoo.utils.RespostaUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,6 +20,7 @@ public class EspecieController {
         this.especieService = especieService;
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> findAll(
             @RequestParam(required = false) String nome,
@@ -54,6 +56,7 @@ public class EspecieController {
         }
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
@@ -74,6 +77,7 @@ public class EspecieController {
         }
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody EspecieDto especieDto) {
         try {
@@ -94,6 +98,7 @@ public class EspecieController {
         }
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @Valid @RequestBody EspecieDto especieDto) {
@@ -115,6 +120,7 @@ public class EspecieController {
         }
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
