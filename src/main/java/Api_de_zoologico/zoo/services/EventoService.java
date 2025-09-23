@@ -78,7 +78,6 @@ public class EventoService {
 
     public Evento create(EventoDto eventoDto) {
         try {
-            // Valida dados obrigatórios
             if (eventoDto.nome() == null || eventoDto.nome().trim().isEmpty()) {
                 throw new RuntimeException("Nome do evento é obrigatório");
             }
@@ -91,12 +90,10 @@ public class EventoService {
                 throw new RuntimeException("Capacidade máxima deve ser um número positivo");
             }
 
-            // Verifica se a data é futura
             if (eventoDto.dataHora().isBefore(LocalDateTime.now())) {
                 throw new RuntimeException("A data do evento deve ser futura");
             }
 
-            // Cria evento
             Evento evento = new Evento();
             evento.setNome(eventoDto.nome().trim());
             evento.setDescricao(eventoDto.descricao() != null ? eventoDto.descricao().trim() : null);
@@ -104,7 +101,6 @@ public class EventoService {
             evento.setCapacidadeMaxima(eventoDto.capacidadeMaxima());
             evento.setDataCadastro(LocalDateTime.now());
 
-            // Associa visitantes se fornecidos
             if (eventoDto.visitantesIds() != null && !eventoDto.visitantesIds().isEmpty()) {
                 List<Visitante> visitantes = visitanteRepository.findAllById(eventoDto.visitantesIds());
                 if (visitantes.size() != eventoDto.visitantesIds().size()) {
@@ -126,7 +122,6 @@ public class EventoService {
         try {
             Evento eventoExistente = findById(id);
 
-            // Valida dados obrigatórios
             if (eventoDto.nome() == null || eventoDto.nome().trim().isEmpty()) {
                 throw new RuntimeException("Nome do evento é obrigatório");
             }
@@ -139,12 +134,10 @@ public class EventoService {
                 throw new RuntimeException("Capacidade máxima deve ser um número positivo");
             }
 
-            // Verifica se a data é futura
             if (eventoDto.dataHora().isBefore(LocalDateTime.now())) {
                 throw new RuntimeException("A data do evento deve ser futura");
             }
 
-            // Verifica se não está reduzindo capacidade abaixo do número atual de inscritos
             if (eventoExistente.getVisitantes() != null &&
                     eventoDto.capacidadeMaxima() < eventoExistente.getVisitantes().size()) {
                 throw new RuntimeException(
@@ -153,13 +146,11 @@ public class EventoService {
                 );
             }
 
-            // Atualiza dados
             eventoExistente.setNome(eventoDto.nome().trim());
             eventoExistente.setDescricao(eventoDto.descricao() != null ? eventoDto.descricao().trim() : null);
             eventoExistente.setDataHora(eventoDto.dataHora());
             eventoExistente.setCapacidadeMaxima(eventoDto.capacidadeMaxima());
 
-            // Atualiza visitantes se fornecidos
             if (eventoDto.visitantesIds() != null) {
                 List<Visitante> visitantes = visitanteRepository.findAllById(eventoDto.visitantesIds());
                 if (visitantes.size() != eventoDto.visitantesIds().size()) {
@@ -188,20 +179,17 @@ public class EventoService {
         }
     }
 
-    // Métodos adicionais para gerenciamento de inscrições
     public Evento adicionarVisitante(Long eventoId, Long visitanteId) {
         try {
             Evento evento = findById(eventoId);
             Visitante visitante = visitanteRepository.findById(visitanteId)
                     .orElseThrow(() -> new RuntimeException("Visitante não encontrado"));
 
-            // Verifica se evento já está lotado
             if (evento.getVisitantes() != null &&
                     evento.getVisitantes().size() >= evento.getCapacidadeMaxima()) {
                 throw new RuntimeException("Evento já está lotado. Capacidade máxima: " + evento.getCapacidadeMaxima());
             }
 
-            // Verifica se visitante já está inscrito
             if (evento.getVisitantes() != null &&
                     evento.getVisitantes().stream().anyMatch(v -> v.getId().equals(visitanteId))) {
                 throw new RuntimeException("Visitante já está inscrito neste evento");

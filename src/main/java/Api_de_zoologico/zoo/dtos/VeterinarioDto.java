@@ -15,5 +15,5 @@ public record VeterinarioDto(
         @Size(max = 50, message = "A especialidade deve ter no máximo 50 caracteres")
         String especialidade,
 
-        FuncionarioRequestDto funcionario // <---- vínculo com Funcionario
+        FuncionarioRequestDto funcionario
 ) {}

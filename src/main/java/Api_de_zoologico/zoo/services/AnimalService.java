@@ -225,12 +225,10 @@ public class AnimalService {
         }
     }
 
-    // Métodos auxiliares
     private void verificarRegrasNegocio(Habitat habitat, Long animalIdExistente) {
         // Regra: Verifica capacidade do habitat
         long animaisNoHabitat = animalRepository.countByHabitatId(habitat.getId());
 
-        // Se for update, não conta o próprio animal
         if (animalIdExistente != null) {
             animaisNoHabitat--;
         }

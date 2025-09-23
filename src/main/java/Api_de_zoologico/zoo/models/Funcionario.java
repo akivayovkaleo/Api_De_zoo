@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Inheritance(strategy = InheritanceType.JOINED) // cada subclasse terá tabela própria
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Funcionario {
 
     @Id

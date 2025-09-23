@@ -44,7 +44,6 @@ public class CuidadorService {
             throw new RuntimeException("Nome do cuidador é obrigatório");
         }
 
-        // Cria o funcionário associado
         Funcionario funcionario = funcionarioService.criarFuncionario(dto.funcionario());
 
         Cuidador cuidador = new Cuidador();
@@ -64,9 +63,6 @@ public class CuidadorService {
         existente.setEspecialidade(dto.especialidade());
         existente.setEmail(dto.email());
         existente.setTurno(dto.turno());
-
-        // Opcional: atualizar o funcionário também
-        // funcionarioService.updateFuncionario(existente.getFuncionario().getId(), dto.funcionario());
 
         return cuidadorRepository.save(existente);
     }
