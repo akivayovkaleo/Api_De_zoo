@@ -51,6 +51,7 @@ public class CuidadorService {
         cuidador.setNome(dto.nome().trim());
         cuidador.setEspecialidade(dto.especialidade());
         cuidador.setTurno(dto.turno());
+        cuidador.setEmail(dto.email());
         cuidador.setFuncionario(funcionario);
 
         return cuidadorRepository.save(cuidador);
@@ -61,6 +62,7 @@ public class CuidadorService {
 
         existente.setNome(dto.nome().trim());
         existente.setEspecialidade(dto.especialidade());
+        existente.setEmail(dto.email());
         existente.setTurno(dto.turno());
 
         // Opcional: atualizar o funcionário também

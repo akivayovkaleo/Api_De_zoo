@@ -12,6 +12,8 @@ import java.util.List;
 @Service
 @Transactional
 public class AnimalService {
+
+    private final EmailService emailService;
     private final AnimalRepository animalRepository;
     private final CuidadorRepository cuidadorRepository;
     private final HabitatRepository habitatRepository;
@@ -23,13 +25,15 @@ public class AnimalService {
             AnimalRepository animalRepository,
             AlimentacaoRepository alimentacaoRepository,
             CuidadorRepository cuidadorRepository,
-            HabitatRepository habitatRepository
+            HabitatRepository habitatRepository,
+            EmailService emailService
     ) {
         this.animalRepository = animalRepository;
         this.habitatRepository = habitatRepository;
         this.cuidadorRepository = cuidadorRepository;
         this.alimentacaoRepository = alimentacaoRepository;
         this.especieRepository = especieRepository;
+        this.emailService = emailService;
     }
 
     public List<Animal> findAll() {
@@ -196,6 +200,10 @@ public class AnimalService {
                 alimentacoes.add(alimentacao);
                 animalExistente.setAlimentacoes(alimentacoes);
             }
+
+            emailService.sendEmail(animalExistente.getCuidador().getEmail(),
+                    "Animal atualizado",
+                    "O animal " + animalExistente.getNome() + " foi atualizado.\n" + animalExistente);
 
             return animalRepository.save(animalExistente);
 

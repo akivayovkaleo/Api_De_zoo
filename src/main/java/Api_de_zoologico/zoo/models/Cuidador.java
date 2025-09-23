@@ -19,6 +19,9 @@ public class Cuidador extends Funcionario {
     @Column(length = 50)
     private String especialidade;
 
+    @Column(length = 50)
+    private String email;
+
     @Column(length = 20)
     private String turno;
 
