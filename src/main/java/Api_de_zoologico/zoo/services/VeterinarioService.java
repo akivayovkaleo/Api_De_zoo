@@ -47,7 +47,6 @@ public class VeterinarioService {
             throw new RuntimeException("Já existe veterinário com CRMV '" + dto.crmv() + "'");
         }
 
-        // Cria funcionário associado
         Funcionario funcionario = funcionarioService.criarFuncionario(dto.funcionario());
 
         Veterinario veterinario = new Veterinario();
@@ -70,9 +69,6 @@ public class VeterinarioService {
         existente.setNome(dto.nome().trim());
         existente.setCrmv(dto.crmv().trim().toUpperCase());
         existente.setEspecialidade(dto.especialidade());
-
-        // Opcional: atualizar funcionario também
-        // funcionarioService.updateFuncionario(existente.getFuncionario().getId(), dto.funcionario());
 
         return veterinarioRepository.save(existente);
     }

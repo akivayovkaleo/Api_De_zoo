@@ -146,7 +146,6 @@ public class EventoController {
         }
     }
 
-    // Endpoints para gerenciamento de inscrições
     @PreAuthorize("hasRole('ROLE_GERENTE_EVENTOS') or hasRole('ROLE_ADMIN')")
     @PostMapping("/{eventoId}/visitantes/{visitanteId}")
     public ResponseEntity<?> adicionarVisitante(@PathVariable Long eventoId, @PathVariable Long visitanteId) {
@@ -189,7 +188,6 @@ public class EventoController {
         }
     }
 
-    // Classe auxiliar para mensagens de sucesso
     public static class MensagemResponse {
         private String mensagem;
 

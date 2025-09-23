@@ -36,6 +36,4 @@ public class Especie {
     @JsonIgnore
     @OneToMany(mappedBy = "especie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Animal> animais;
-
-    //http://localhost:8080/swagger-ui.html
 }
