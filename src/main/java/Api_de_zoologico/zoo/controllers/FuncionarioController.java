@@ -5,6 +5,7 @@ import Api_de_zoologico.zoo.dtos.FuncionarioResponseDto;
 import Api_de_zoologico.zoo.services.FuncionarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

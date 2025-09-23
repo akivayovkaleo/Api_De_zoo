@@ -7,6 +7,7 @@ import Api_de_zoologico.zoo.utils.RespostaUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class HabitatController {
         this.habitatService = habitatService;
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> findAll() {
         try {
@@ -35,6 +37,7 @@ public class HabitatController {
         }
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
@@ -55,6 +58,7 @@ public class HabitatController {
         }
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
     @GetMapping("/tipo")
     public ResponseEntity<?> findByTipo(@RequestParam String tipo) {
         try {
@@ -75,6 +79,7 @@ public class HabitatController {
         }
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
     @GetMapping("/nome")
     public ResponseEntity<?> findByNome(@RequestParam String nome) {
         try {
@@ -95,6 +100,7 @@ public class HabitatController {
         }
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody HabitatDto habitatDto) {
         try {
@@ -115,6 +121,7 @@ public class HabitatController {
         }
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @Valid @RequestBody HabitatDto habitatDto) {
@@ -136,6 +143,7 @@ public class HabitatController {
         }
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {

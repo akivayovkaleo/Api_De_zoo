@@ -7,7 +7,9 @@ import Api_de_zoologico.zoo.utils.RespostaUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/alimentacoes")
@@ -19,6 +21,7 @@ public class AlimentacaoController {
         this.alimentacaoService = alimentacaoService;
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> findAll(
             @RequestParam(required = false) String tipoComida,
@@ -46,6 +49,7 @@ public class AlimentacaoController {
         }
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
@@ -66,6 +70,7 @@ public class AlimentacaoController {
         }
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody AlimentacaoDto alimentacaoDto) {
         try {
@@ -86,6 +91,7 @@ public class AlimentacaoController {
         }
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @Valid @RequestBody AlimentacaoDto alimentacaoDto) {
@@ -107,6 +113,7 @@ public class AlimentacaoController {
         }
     }
 
+    @PreAuthorize("hasRole('CUIDADOR') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {

@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ public class VisitanteController {
         this.visitanteService = visitanteService;
     }
 
+    @PreAuthorize("hasRole('VISITANTE') or hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> findAll(
             @RequestParam(required = false) String nome,
@@ -54,6 +56,7 @@ public class VisitanteController {
         }
     }
 
+    @PreAuthorize("hasRole('VISITANTE') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
@@ -74,6 +77,7 @@ public class VisitanteController {
         }
     }
 
+    @PreAuthorize("hasRole('VISITANTE') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody VisitanteDto visitanteDto) {
         try {
@@ -94,6 +98,7 @@ public class VisitanteController {
         }
     }
 
+    @PreAuthorize("hasRole('VISITANTE') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @Valid @RequestBody VisitanteDto visitanteDto) {
@@ -115,6 +120,7 @@ public class VisitanteController {
         }
     }
 
+    @PreAuthorize("hasRole('VISITANTE') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
