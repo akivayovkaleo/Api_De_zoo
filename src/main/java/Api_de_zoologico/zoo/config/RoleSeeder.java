@@ -16,6 +16,10 @@ public class RoleSeeder implements CommandLineRunner {
     public void run(String... args) {
         criarRoleSeNaoExistir("ROLE_VISITANTE");
         criarRoleSeNaoExistir("ROLE_FUNCIONARIO");
+        criarRoleSeNaoExistir("ROLE_ADMIN");
+        criarRoleSeNaoExistir("ROLE_GERENTE_EVENTOS");
+        criarRoleSeNaoExistir("ROLE_CUIDADOR");
+        criarRoleSeNaoExistir("ROLE_VETERINARIO");
     }
 
     private void criarRoleSeNaoExistir(String name) {

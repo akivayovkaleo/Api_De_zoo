@@ -1,16 +1,24 @@
 package Api_de_zoologico.zoo.dtos;
 
-import lombok.Data;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDate;
+public record VisitanteRequestDto(
 
-@Data
-public class VisitanteRequestDto {
-    private String nome;
-    private String cpf;
-    private LocalDate dataNascimento;
-    private String telefone;
+        @NotBlank(message = "Nome é obrigatório")
+        String nome,
 
-    private String username;
-    private String password;
-}
+        @NotNull(message = "Idade é obrigatória")
+        @Min(value = 0, message = "Idade não pode ser negativa")
+        Integer idade,
+
+        @NotBlank(message = "Documento é obrigatório")
+        String documento,
+
+        @NotBlank(message = "Username é obrigatório")
+        String username,
+
+        @NotBlank(message = "Senha é obrigatória")
+        String password
+) {}

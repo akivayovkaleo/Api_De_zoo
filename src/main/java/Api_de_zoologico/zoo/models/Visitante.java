@@ -1,45 +1,38 @@
 package Api_de_zoologico.zoo.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.util.List;
+import lombok.Setter;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "visitantes")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Visitante {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
     private String nome;
 
-    @Column(unique = true, length = 11)
-    private String cpf;
+    @Column(nullable = false)
+    private Integer idade;
 
-    @Column(name = "data_nascimento")
-    private LocalDate dataNascimento;
+    @Column(nullable = false, unique = true)
+    private String documento;
 
-    @Column(length = 20)
-    private String telefone;
-
-    @Column(name = "data_cadastro")
-    private LocalDate dataCadastro;
-
-    @JsonIgnore
-    @ManyToMany(mappedBy = "visitantes")
-    private List<Evento> eventos;
-
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
+
+    public Visitante(String nome, Integer idade, String documento, User user) {
+        this.nome = nome;
+        this.idade = idade;
+        this.documento = documento;
+        this.user = user;
+    }
 }

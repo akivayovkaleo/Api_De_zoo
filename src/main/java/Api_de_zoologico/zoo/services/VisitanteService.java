@@ -2,17 +2,17 @@ package Api_de_zoologico.zoo.services;
 
 import Api_de_zoologico.zoo.dtos.VisitanteRequestDto;
 import Api_de_zoologico.zoo.dtos.VisitanteResponseDto;
-import Api_de_zoologico.zoo.models.Role;
 import Api_de_zoologico.zoo.models.User;
 import Api_de_zoologico.zoo.models.Visitante;
-import Api_de_zoologico.zoo.repositories.RoleRepository;
 import Api_de_zoologico.zoo.repositories.UserRepository;
+import Api_de_zoologico.zoo.repositories.RoleRepository;
 import Api_de_zoologico.zoo.repositories.VisitanteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,38 +24,66 @@ public class VisitanteService {
     private final PasswordEncoder passwordEncoder;
 
     public VisitanteResponseDto criarVisitante(VisitanteRequestDto dto) {
-        if (visitanteRepository.existsByCpf(dto.getCpf())) {
-            throw new RuntimeException("Já existe visitante com esse CPF");
-        }
-
-        // Criar User
         User user = new User();
-        user.setUsername(dto.getUsername());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setUsername(dto.username());
+        user.setPassword(passwordEncoder.encode(dto.password()));
         user.setRole(roleRepository.findByName("ROLE_VISITANTE")
                 .orElseThrow(() -> new RuntimeException("Role ROLE_VISITANTE não encontrada")));
         userRepository.save(user);
 
-        // Criar Visitante
         Visitante visitante = new Visitante();
-        visitante.setNome(dto.getNome());
-        visitante.setCpf(dto.getCpf());
-        visitante.setDataNascimento(dto.getDataNascimento());
-        visitante.setTelefone(dto.getTelefone());
-        visitante.setDataCadastro(LocalDate.now());
+        visitante.setNome(dto.nome());
+        visitante.setIdade(dto.idade());
+        visitante.setDocumento(dto.documento());
         visitante.setUser(user);
+
         visitanteRepository.save(visitante);
 
-        // Response
-        VisitanteResponseDto response = new VisitanteResponseDto();
-        response.setId(visitante.getId());
-        response.setNome(visitante.getNome());
-        response.setCpf(visitante.getCpf());
-        response.setDataNascimento(visitante.getDataNascimento());
-        response.setTelefone(visitante.getTelefone());
-        response.setDataCadastro(visitante.getDataCadastro());
-        response.setUsername(user.getUsername());
+        return toResponseDto(visitante);
+    }
 
-        return response;
+    public List<VisitanteResponseDto> findAll() {
+        return visitanteRepository.findAll()
+                .stream()
+                .map(this::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    public VisitanteResponseDto findById(Long id) {
+        Visitante visitante = visitanteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Visitante não encontrado com ID: " + id));
+        return toResponseDto(visitante);
+    }
+
+    public VisitanteResponseDto update(Long id, VisitanteRequestDto dto) {
+        Visitante visitante = visitanteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Visitante não encontrado com ID: " + id));
+
+        visitante.setNome(dto.nome());
+        visitante.setIdade(dto.idade());
+        visitante.setDocumento(dto.documento());
+
+        if (dto.password() != null && !dto.password().isBlank()) {
+            visitante.getUser().setPassword(passwordEncoder.encode(dto.password()));
+        }
+
+        visitanteRepository.save(visitante);
+        return toResponseDto(visitante);
+    }
+
+    public void delete(Long id) {
+        Visitante visitante = visitanteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Visitante não encontrado com ID: " + id));
+        visitanteRepository.delete(visitante);
+    }
+
+    private VisitanteResponseDto toResponseDto(Visitante visitante) {
+        return new VisitanteResponseDto(
+                visitante.getId(),
+                visitante.getNome(),
+                visitante.getIdade(),
+                visitante.getDocumento(),
+                visitante.getUser().getUsername()
+        );
     }
 }

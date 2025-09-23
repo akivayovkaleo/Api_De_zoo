@@ -7,6 +7,7 @@ import Api_de_zoologico.zoo.utils.RespostaUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class AnimalController {
         this.animalService = animalService;
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_CUIDADOR') or hasRole('ROLE_VETERINARIO')")
     @GetMapping
     public ResponseEntity<?> findAll() {
         try {
@@ -35,6 +37,7 @@ public class AnimalController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CUIDADOR') or hasRole('ROLE_VETERINARIO')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
