@@ -2,8 +2,12 @@ package Api_de_zoologico.zoo.controllers;
 
 import Api_de_zoologico.zoo.dtos.VisitanteRequestDto;
 import Api_de_zoologico.zoo.dtos.VisitanteResponseDto;
+import Api_de_zoologico.zoo.models.Visitante;
 import Api_de_zoologico.zoo.services.VisitanteService;
+import Api_de_zoologico.zoo.utils.RespostaUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +21,7 @@ public class VisitanteController {
 
     private final VisitanteService visitanteService;
 
-    @PreAuthorize()
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<VisitanteResponseDto> criar(@RequestBody VisitanteRequestDto dto) {
         return ResponseEntity.ok(visitanteService.criarVisitante(dto));
@@ -33,8 +37,8 @@ public class VisitanteController {
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
-            Visitante visitante = visitanteService.findById(id);
-            return ResponseEntity.ok(visitante);
+            VisitanteResponseDto visitanteResponseDto = visitanteService.findById(id); // Agora você chama o método correto que retorna o DTO
+            return ResponseEntity.ok(visitanteResponseDto); // Retorna o DTO
         } catch (RuntimeException e) {
             return RespostaUtil.buildErrorResponse(
                     "Visitante não encontrado",
@@ -50,27 +54,6 @@ public class VisitanteController {
         }
     }
 
-    @PreAuthorize("hasRole('VISITANTE') or hasRole('ADMIN')")
-    @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody VisitanteDto visitanteDto) {
-        try {
-            Visitante visitanteCriado = visitanteService.create(visitanteDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(visitanteCriado);
-        } catch (RuntimeException e) {
-            return RespostaUtil.buildErrorResponse(
-                    "Erro ao criar visitante",
-                    "Não foi possível criar o visitante. " + e.getMessage(),
-                    HttpStatus.BAD_REQUEST
-            );
-        } catch (Exception e) {
-            return RespostaUtil.buildErrorResponse(
-                    "Erro interno do servidor",
-                    "Ocorreu um erro inesperado ao criar o visitante: " + e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
-
-    }
 
     @PreAuthorize("hasRole('VISITANTE') or hasRole('ADMIN')")
     @PutMapping("/{id}")
