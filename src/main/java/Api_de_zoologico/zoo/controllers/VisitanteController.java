@@ -21,19 +21,19 @@ public class VisitanteController {
 
     private final VisitanteService visitanteService;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<VisitanteResponseDto> criar(@RequestBody VisitanteRequestDto dto) {
         return ResponseEntity.ok(visitanteService.criarVisitante(dto));
     }
 
-    @PreAuthorize("hasRole('VISITANTE') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('VISITANTE') or hasRole('ROLE_ADMIN')")
     @GetMapping
     public List<VisitanteResponseDto> listar() {
         return visitanteService.findAll();
     }
 
-    @PreAuthorize("hasRole('VISITANTE') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('VISITANTE') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
@@ -55,13 +55,13 @@ public class VisitanteController {
     }
 
 
-    @PreAuthorize("hasRole('VISITANTE') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('VISITANTE') or hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<VisitanteResponseDto> atualizar(@PathVariable Long id, @RequestBody VisitanteRequestDto dto) {
         return ResponseEntity.ok(visitanteService.update(id, dto));
     }
 
-    @PreAuthorize("hasRole('VISITANTE') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('VISITANTE') or hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         visitanteService.delete(id);
