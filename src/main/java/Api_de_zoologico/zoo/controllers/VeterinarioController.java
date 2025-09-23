@@ -21,7 +21,7 @@ public class VeterinarioController {
         this.veterinarioService = veterinarioService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<?> findAll(
             @RequestParam(required = false) String especialidade,
@@ -43,20 +43,20 @@ public class VeterinarioController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         return ResponseEntity.ok(veterinarioService.findById(id));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody VeterinarioDto veterinarioDto) {
         Veterinario veterinarioCriado = veterinarioService.create(veterinarioDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(veterinarioCriado);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @Valid @RequestBody VeterinarioDto veterinarioDto) {
@@ -64,7 +64,7 @@ public class VeterinarioController {
         return ResponseEntity.ok(veterinarioAtualizado);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         veterinarioService.delete(id);

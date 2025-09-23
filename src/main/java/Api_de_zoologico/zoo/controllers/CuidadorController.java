@@ -21,7 +21,7 @@ public class CuidadorController {
         this.cuidadorService = cuidadorService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<?> findAll(
             @RequestParam(required = false) String especialidade,
@@ -47,20 +47,20 @@ public class CuidadorController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         return ResponseEntity.ok(cuidadorService.findById(id));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody CuidadorDto cuidadorDto) {
         Cuidador cuidadorCriado = cuidadorService.create(cuidadorDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(cuidadorCriado);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @Valid @RequestBody CuidadorDto cuidadorDto) {
@@ -68,7 +68,7 @@ public class CuidadorController {
         return ResponseEntity.ok(cuidadorAtualizado);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         cuidadorService.delete(id);

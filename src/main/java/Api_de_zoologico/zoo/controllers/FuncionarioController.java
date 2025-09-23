@@ -18,6 +18,7 @@ public class FuncionarioController {
 
     private final FuncionarioService funcionarioService;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<FuncionarioResponseDto> criarFuncionario(@RequestBody FuncionarioRequestDto dto) {
         Funcionario funcionario = funcionarioService.criarFuncionario(dto);
@@ -35,25 +36,25 @@ public class FuncionarioController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<FuncionarioResponseDto> listar() {
         return funcionarioService.findAll();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public FuncionarioResponseDto buscarPorId(@PathVariable Long id) {
         return funcionarioService.findById(id);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public FuncionarioResponseDto atualizar(@PathVariable Long id, @RequestBody FuncionarioRequestDto dto) {
         return funcionarioService.update(id, dto);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         funcionarioService.delete(id);
         return ResponseEntity.noContent().build();

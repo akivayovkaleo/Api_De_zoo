@@ -22,7 +22,7 @@ public class HabitatController {
         this.habitatService = habitatService;
     }
 
-    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_CUIDADOR') or hasRole('ROLE_VETERINARIO') or hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<?> findAll() {
         try {
@@ -37,7 +37,7 @@ public class HabitatController {
         }
     }
 
-    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_CUIDADOR') or hasRole('ROLE_VETERINARIO') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
@@ -58,7 +58,7 @@ public class HabitatController {
         }
     }
 
-    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_CUIDADOR') or hasRole('ROLE_VETERINARIO') or hasRole('ROLE_ADMIN')")
     @GetMapping("/tipo")
     public ResponseEntity<?> findByTipo(@RequestParam String tipo) {
         try {
@@ -79,7 +79,7 @@ public class HabitatController {
         }
     }
 
-    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_CUIDADOR') or hasRole('ROLE_VETERINARIO') or hasRole('ROLE_ADMIN')")
     @GetMapping("/nome")
     public ResponseEntity<?> findByNome(@RequestParam String nome) {
         try {
@@ -100,7 +100,7 @@ public class HabitatController {
         }
     }
 
-    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_CUIDADOR') or hasRole('ROLE_VETERINARIO') or hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody HabitatDto habitatDto) {
         try {
@@ -121,7 +121,7 @@ public class HabitatController {
         }
     }
 
-    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_CUIDADOR') or hasRole('ROLE_VETERINARIO') or hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @Valid @RequestBody HabitatDto habitatDto) {
@@ -143,7 +143,7 @@ public class HabitatController {
         }
     }
 
-    @PreAuthorize("hasRole('CUIDADOR') or hasRole('VETERINARIO') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_CUIDADOR') or hasRole('ROLE_VETERINARIO') or hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {

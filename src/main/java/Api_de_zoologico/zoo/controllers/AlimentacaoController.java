@@ -21,7 +21,7 @@ public class AlimentacaoController {
         this.alimentacaoService = alimentacaoService;
     }
 
-    @PreAuthorize("hasRole('CUIDADOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_CUIDADOR') or hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<?> findAll(
             @RequestParam(required = false) String tipoComida,
@@ -49,7 +49,7 @@ public class AlimentacaoController {
         }
     }
 
-    @PreAuthorize("hasRole('CUIDADOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_CUIDADOR') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
@@ -70,7 +70,7 @@ public class AlimentacaoController {
         }
     }
 
-    @PreAuthorize("hasRole('CUIDADOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_CUIDADOR') or hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody AlimentacaoDto alimentacaoDto) {
         try {
@@ -91,7 +91,7 @@ public class AlimentacaoController {
         }
     }
 
-    @PreAuthorize("hasRole('CUIDADOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_CUIDADOR') or hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @Valid @RequestBody AlimentacaoDto alimentacaoDto) {
@@ -113,7 +113,7 @@ public class AlimentacaoController {
         }
     }
 
-    @PreAuthorize("hasRole('CUIDADOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_CUIDADOR') or hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {

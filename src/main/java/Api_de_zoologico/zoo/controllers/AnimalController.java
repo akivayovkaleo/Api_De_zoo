@@ -22,7 +22,7 @@ public class AnimalController {
         this.animalService = animalService;
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_CUIDADOR') or hasRole('ROLE_VETERINARIO')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CUIDADOR') or hasRole('ROLE_VETERINARIO')")
     @GetMapping
     public ResponseEntity<?> findAll() {
         try {
@@ -37,7 +37,7 @@ public class AnimalController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('CUIDADOR') or hasRole('ROLE_VETERINARIO')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('CUIDADOR') or hasRole('ROLE_VETERINARIO')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
@@ -52,6 +52,7 @@ public class AnimalController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('CUIDADOR') or hasRole('ROLE_VETERINARIO')")
     @GetMapping("/idade")
     public ResponseEntity<?> findByIdade(
             @RequestParam int idadeMin,
@@ -68,6 +69,7 @@ public class AnimalController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('CUIDADOR') or hasRole('ROLE_VETERINARIO')")
     @GetMapping("/nome")
     public ResponseEntity<?> findByNome(@RequestParam String nome) {
         try {
@@ -82,6 +84,7 @@ public class AnimalController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('CUIDADOR') or hasRole('ROLE_VETERINARIO')")
     @GetMapping("/especie")
     public ResponseEntity<?> findByEspecie(@RequestParam String nome) {
         try {
@@ -96,6 +99,7 @@ public class AnimalController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('CUIDADOR') or hasRole('ROLE_VETERINARIO')")
     @PostMapping
     public ResponseEntity<?> add(@Valid @RequestBody AnimalDto animal) {
         try {
@@ -116,6 +120,7 @@ public class AnimalController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('CUIDADOR') or hasRole('ROLE_VETERINARIO')")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @Valid @RequestBody AnimalDto animal) {
@@ -137,6 +142,7 @@ public class AnimalController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('CUIDADOR') or hasRole('ROLE_VETERINARIO')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
