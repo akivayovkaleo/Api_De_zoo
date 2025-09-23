@@ -21,8 +21,10 @@ public class AlimentacaoService {
 
     public Alimentacao create(AlimentacaoDto alimentacaodto) {
         Alimentacao alimentacao = new Alimentacao();
-        Animal animal = animalService.findById(alimentacaodto.animal_id());
-        alimentacao.setAnimal(animal);
+        if (alimentacaodto.animal_id() != null){
+            Animal animal = animalService.findById(alimentacaodto.animal_id());
+            alimentacao.setAnimal(animal);
+        }
         alimentacao.setQuantidadeDiaria(alimentacaodto.quantidadeDiaria());
         alimentacao.setTipoComida(alimentacaodto.tipoComida());
 
